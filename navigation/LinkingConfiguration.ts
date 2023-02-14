@@ -13,21 +13,23 @@ const linking: LinkingOptions<RootStackParamList> = {
   prefixes: [Linking.createURL('/')],
   config: {
     screens: {
-      Root: {
-        screens: {
-          TabOne: {
-            screens: {
-              TabOneScreen: 'one',
-            },
-          },
-          TabTwo: {
-            screens: {
-              TabTwoScreen: 'two',
-            },
-          },
-        },
-      },
-      Modal: 'modal',
+      Login: 'login',
+      Register: 'register',
+      // Root: {
+      //   screens: {
+      //     TabOne: {
+      //       screens: {
+      //         TabOneScreen: 'one',
+      //       },
+      //     },
+      //     TabTwo: {
+      //       screens: {
+      //         TabTwoScreen: 'two',
+      //       },
+      //     },
+      //   },
+      // },
+      // Modal: 'modal',
       NotFound: '*',
     },
   },

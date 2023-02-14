@@ -19,6 +19,8 @@ import TabOneScreen from '../screens/TabOneScreen';
 import TabTwoScreen from '../screens/TabTwoScreen';
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
+import LoginScreen from '../screens/LoginScreen';
+import RegisterScreen from '../screens/RegisterScreen';
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
@@ -36,12 +38,14 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName="Welcome">
       <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
         <Stack.Screen name="Modal" component={ModalScreen} />
+        <Stack.Screen name="Login" component={LoginScreen} options={{ title: '登陆' }} />
+        <Stack.Screen name="Register" component={RegisterScreen} options={{ title: '注册' }} />
       </Stack.Group>
     </Stack.Navigator>
   );
