@@ -10,11 +10,17 @@ type HttpsProps = {
 };
 
 export const get = (props: HttpsProps) => {
+  const paramsArray: string[] = [];
+  if (props.params) {
+    Object.keys(props.params).forEach(key => {
+      // @ts-ignore
+      if (key) paramsArray.push(key + '=' + props.params[key]);
+    });
+  }
   return new Promise((resolve, reject) => {
-    fetch(baseUrl + props.url, {
+    fetch(baseUrl + props.url + '?' + paramsArray.join('&'), {
       method: 'GET',
       headers,
-      body: JSON.stringify(props.params),
     })
       .then(responseData => {
         resolve(responseData);

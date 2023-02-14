@@ -13,22 +13,12 @@ type Props = {};
 
 export default function LoginScreen({}: Props) {
   const insets = useSafeAreaInsets();
-  const [res, setRes] = useState('haha');
+  const [test, setTest] = useState('test');
   const login = async () => {
-    console.log('testtest');
     try {
-      const res = await post({
-        url: '/pet/account/login.json',
-        params: {
-          phoneNumber: '13336788636',
-          password: 'ssddff1123',
-        },
-      });
-      console.log(JSON.stringify(res));
-      // setRes(JSON.stringify(res));
+      // const res = await post('')
     } catch (error) {
-      console.log(JSON.stringify(error));
-      setRes('123');
+      console.error('Err: ' + error);
     }
   };
   return (
@@ -43,16 +33,32 @@ export default function LoginScreen({}: Props) {
     >
       <Image source={icon} style={style.image} />
       <View>
-        <TextInput placeholder="手机号码" placeholderTextColor={'#361D1E50'} style={style.input} />
-        <TextInput placeholder="密码" placeholderTextColor={'#361D1E50'} style={style.input} />
+        <TextInput
+          placeholder="手机号码"
+          placeholderTextColor={'#361D1E50'}
+          style={style.input}
+          textContentType={'username'}
+          returnKeyType={'next'}
+        />
+        <TextInput
+          placeholder="密码"
+          placeholderTextColor={'#361D1E50'}
+          style={style.input}
+          secureTextEntry={true}
+          textContentType={'password'}
+          returnKeyType={'done'}
+          onChangeText={text => {
+            setTest(text);
+          }}
+        />
         <Button
           title="登陆"
           viewStyle={{ ...style.buttonView, marginTop: pxToDp(32) }}
           textStyle={style.buttonText}
           onPress={() => login()}
         />
-        <Text>{res}</Text>
       </View>
+      <Text>{test}</Text>
       <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
     </View>
   );
@@ -76,8 +82,9 @@ const style = StyleSheet.create({
     width: pxToDp(327),
     height: pxToDp(58),
     borderBottomColor: '#bbbbbb',
-    borderBottomWidth: pxToDp(1),
-    lineHeight: pxToDp(29),
+    // borderBottomWidth: pxToDp(1),
+    // FIXME 测试样式
+    borderWidth: 1,
     fontSize: pxToDp(16),
     color: '#3611d1e',
     marginTop: pxToDp(16),
