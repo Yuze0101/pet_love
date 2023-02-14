@@ -12,7 +12,7 @@ type HttpsProps = {
 export const get = (props: HttpsProps) => {
   return new Promise((resolve, reject) => {
     fetch(baseUrl + props.url, {
-      method: 'get',
+      method: 'GET',
       headers,
       body: JSON.stringify(props.params),
     })
@@ -20,7 +20,7 @@ export const get = (props: HttpsProps) => {
         resolve(responseData);
       })
       .catch(err => {
-        console.log('err', err);
+        console.error('err', err);
         reject(err);
       });
   });
@@ -28,7 +28,7 @@ export const get = (props: HttpsProps) => {
 export const post = (props: HttpsProps) => {
   return new Promise((resolve, reject) => {
     fetch(baseUrl + props.url, {
-      method: 'get',
+      method: 'POST',
       headers,
       body: JSON.stringify(props.params),
     })
@@ -36,7 +36,7 @@ export const post = (props: HttpsProps) => {
         resolve(responseData);
       })
       .catch(err => {
-        // console.log('err', err);
+        console.error('err', err);
         reject(err);
       });
   });
