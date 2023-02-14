@@ -6,9 +6,14 @@ import Colors from '../constants/Colors';
 import { pxToDp } from '../constants/Layout';
 const locked = require('../assets/images/locked.png');
 const { themeColor } = Colors;
-type Props = {};
+type RegisterParams = {
+  phoneNumber: string;
+  verificationCode: string;
+  password: string;
+  confirmPassword: string;
+};
 
-export default function RegisterScreen({}: Props) {
+export default function RegisterScreen() {
   const insets = useSafeAreaInsets();
   return (
     <View
@@ -46,7 +51,7 @@ const style = StyleSheet.create({
     width: pxToDp(64),
     height: pxToDp(80),
     marginTop: pxToDp(53),
-    marginBottom:pxToDp(20),
+    marginBottom: pxToDp(20),
   },
   input: {
     width: pxToDp(327),

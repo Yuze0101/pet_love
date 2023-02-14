@@ -23,7 +23,7 @@ export const get = (props: HttpsProps) => {
       headers,
     })
       .then(responseData => {
-        resolve(responseData);
+        resolve(responseData.json());
       })
       .catch(err => {
         console.error('err', err);
@@ -39,7 +39,7 @@ export const post = (props: HttpsProps) => {
       body: JSON.stringify(props.params),
     })
       .then(responseData => {
-        resolve(responseData);
+        resolve(responseData.json());
       })
       .catch(err => {
         console.error('err', err);
