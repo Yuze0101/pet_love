@@ -1,22 +1,31 @@
 import { useState } from 'react';
-import { View, TextInput, Text, Image, Platform, StyleSheet } from 'react-native';
+import { View, TextInput, Image, Platform, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import Button from '../components/Button';
 import Colors from '../constants/Colors';
 import { pxToDp } from '../constants/Layout';
-import { get, post } from '../api/fetch';
+import { login } from '../api';
 
 const icon = require('../assets/images/icon.png');
 const { themeColor } = Colors;
-type Props = {};
+type LoginParams = {
+  phoneNumber: string;
+  password: string;
+};
 
-export default function LoginScreen({}: Props) {
+export default function LoginScreen() {
   const insets = useSafeAreaInsets();
-  const [test, setTest] = useState('test');
-  const login = async () => {
+
+  const userLoginParams: LoginParams = {
+    phoneNumber: '',
+    password: '',
+  };
+
+  const userLogin = async () => {
     try {
-      // const res = await post('')
+      const res = await login(userLoginParams);
+      console.log('login res : ' + JSON.stringify(res));
     } catch (error) {
       console.error('Err: ' + error);
     }
@@ -39,6 +48,9 @@ export default function LoginScreen({}: Props) {
           style={style.input}
           textContentType={'username'}
           returnKeyType={'next'}
+          onChangeText={phoneNumber => {
+            userLoginParams.phoneNumber = phoneNumber;
+          }}
         />
         <TextInput
           placeholder="密码"
@@ -47,18 +59,17 @@ export default function LoginScreen({}: Props) {
           secureTextEntry={true}
           textContentType={'password'}
           returnKeyType={'done'}
-          onChangeText={text => {
-            setTest(text);
+          onChangeText={password => {
+            userLoginParams.password = password;
           }}
         />
         <Button
           title="登陆"
           viewStyle={{ ...style.buttonView, marginTop: pxToDp(32) }}
           textStyle={style.buttonText}
-          onPress={() => login()}
+          onPress={() => userLogin()}
         />
       </View>
-      <Text>{test}</Text>
       <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
     </View>
   );
