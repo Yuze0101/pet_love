@@ -10,17 +10,23 @@ type HttpsProps = {
 };
 
 export const get = (props: HttpsProps) => {
+  const paramsArray: string[] = [];
+  if (props.params) {
+    Object.keys(props.params).forEach(key => {
+      // @ts-ignore
+      if (key) paramsArray.push(key + '=' + props.params[key]);
+    });
+  }
   return new Promise((resolve, reject) => {
-    fetch(baseUrl + props.url, {
-      method: 'get',
+    fetch(baseUrl + props.url + '?' + paramsArray.join('&'), {
+      method: 'GET',
       headers,
-      body: JSON.stringify(props.params),
     })
       .then(responseData => {
         resolve(responseData);
       })
       .catch(err => {
-        console.log('err', err);
+        console.error('err', err);
         reject(err);
       });
   });
@@ -28,7 +34,7 @@ export const get = (props: HttpsProps) => {
 export const post = (props: HttpsProps) => {
   return new Promise((resolve, reject) => {
     fetch(baseUrl + props.url, {
-      method: 'get',
+      method: 'POST',
       headers,
       body: JSON.stringify(props.params),
     })
@@ -36,7 +42,7 @@ export const post = (props: HttpsProps) => {
         resolve(responseData);
       })
       .catch(err => {
-        // console.log('err', err);
+        console.error('err', err);
         reject(err);
       });
   });
