@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import { View, TextInput, Image, Platform, StyleSheet } from 'react-native';
+import Toast from 'react-native-root-toast';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import Button from '../components/Button';
@@ -25,6 +25,7 @@ export default function LoginScreen() {
   const userLogin = async () => {
     try {
       const res = await login(userLoginParams);
+      Toast.show('Request success. ' + JSON.stringify(res));
       console.log('login res : ' + JSON.stringify(res));
     } catch (error) {
       console.error('Err: ' + error);
