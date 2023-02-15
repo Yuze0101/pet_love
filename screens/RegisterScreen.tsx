@@ -179,7 +179,7 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
           userRegister();
         }}
       />
-      <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
+      <StatusBar style={'auto'} />
     </KeyboardAvoidingView>
   );
 }

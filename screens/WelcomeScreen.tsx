@@ -8,7 +8,6 @@ import Colors from '../constants/Colors';
 const { themeColor } = Colors;
 const icon = require('../assets/images/icon.png');
 
-const Stack = createNativeStackNavigator();
 type Props = {};
 
 const WelcomeScreen = (props: Props) => {

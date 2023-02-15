@@ -98,7 +98,7 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
           onPress={() => linkTo('/register/resetPassword')}
         />
       </View>
-      <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
+      <StatusBar style={'auto'} />
     </View>
   );
 }
