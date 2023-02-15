@@ -6,6 +6,7 @@ import Button from '../components/Button';
 import Colors from '../constants/Colors';
 import { pxToDp } from '../constants/Layout';
 import { login } from '../api';
+import { RootStackScreenProps } from '../types';
 import storage from '../utils/storage';
 
 const icon = require('../assets/images/icon.png');
@@ -15,7 +16,7 @@ type LoginParams = {
   password: string;
 };
 
-export default function LoginScreen() {
+export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'>) {
   const insets = useSafeAreaInsets();
 
   const userLoginParams: LoginParams = {
@@ -37,6 +38,7 @@ export default function LoginScreen() {
           data: res.data,
         });
       }
+      navigation.replace('Root');
     } catch (error) {
       console.error('Err: ' + error);
     }
