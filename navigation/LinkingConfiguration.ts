@@ -14,7 +14,12 @@ const linking: LinkingOptions<RootStackParamList> = {
   config: {
     screens: {
       Login: 'login',
-      Register: 'register',
+      Register: {
+        path: 'register/:status',
+        parse:{
+          status: (status)=> status
+        }
+      },
       // Root: {
       //   screens: {
       //     TabOne: {

@@ -42,10 +42,13 @@ function RootNavigator() {
       <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
-      <Stack.Group screenOptions={{ presentation: 'modal' }}>
+      <Stack.Group screenOptions={{ presentation: 'card' }}>
         <Stack.Screen name="Modal" component={ModalScreen} />
         <Stack.Screen name="Login" component={LoginScreen} options={{ title: '登陆' }} />
-        <Stack.Screen name="Register" component={RegisterScreen} options={{ title: '注册' }} />
+        <Stack.Screen name="Register" component={RegisterScreen} options={({ route }) => {
+          //@ts-ignore
+          return { title: route?.params?.status == 'regist' ? '注册' : '找回密码' }
+        }} />
       </Stack.Group>
     </Stack.Navigator>
   );

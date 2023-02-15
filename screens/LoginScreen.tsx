@@ -1,22 +1,46 @@
-import { useState } from 'react';
-import { View, TextInput, Text, Image, Platform, StyleSheet } from 'react-native';
+import { View, TextInput, Image, Platform, StyleSheet } from 'react-native';
+import Toast from 'react-native-root-toast';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useLinkTo } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import Button from '../components/Button';
 import Colors from '../constants/Colors';
 import { pxToDp } from '../constants/Layout';
-import { get, post } from '../api/fetch';
+import { login } from '../api';
+import { RootStackScreenProps } from '../types';
+import storage from '../utils/storage';
 
 const icon = require('../assets/images/icon.png');
 const { themeColor } = Colors;
-type Props = {};
+type LoginParams = {
+  phoneNumber: string;
+  password: string;
+};
 
-export default function LoginScreen({}: Props) {
+export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'>) {
   const insets = useSafeAreaInsets();
-  const [test, setTest] = useState('test');
-  const login = async () => {
+  const linkTo = useLinkTo()
+
+  const userLoginParams: LoginParams = {
+    phoneNumber: '',
+    password: '',
+  };
+
+  const userLogin = async () => {
     try {
-      // const res = await post('')
+      const res: any = await login(userLoginParams);
+      Toast.show('Request success. ' + JSON.stringify(res), {
+        position: Toast.positions.CENTER,
+      });
+      // TODO 保存token
+      console.log('login res : ' + JSON.stringify(res));
+      if (res.success) {
+        storage.save({
+          key: 'token',
+          data: res.data,
+        });
+      }
+      navigation.replace('Root');
     } catch (error) {
       console.error('Err: ' + error);
     }
@@ -39,6 +63,10 @@ export default function LoginScreen({}: Props) {
           style={style.input}
           textContentType={'username'}
           returnKeyType={'next'}
+          keyboardType={'number-pad'}
+          onChangeText={phoneNumber => {
+            userLoginParams.phoneNumber = phoneNumber;
+          }}
         />
         <TextInput
           placeholder="密码"
@@ -47,18 +75,29 @@ export default function LoginScreen({}: Props) {
           secureTextEntry={true}
           textContentType={'password'}
           returnKeyType={'done'}
-          onChangeText={text => {
-            setTest(text);
+          onChangeText={password => {
+            userLoginParams.password = password;
           }}
         />
         <Button
           title="登陆"
           viewStyle={{ ...style.buttonView, marginTop: pxToDp(32) }}
           textStyle={style.buttonText}
-          onPress={() => login()}
+          onPress={() => userLogin()}
+        />
+        <Button
+          title="忘记密码"
+          viewStyle={{
+            width: pxToDp(327),
+            height: pxToDp(20),
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginTop: pxToDp(32),
+          }}
+          textStyle={{ fontSize: pxToDp(14), color: '#9c9494' }}
+          onPress={() => linkTo('/register/resetPassword')}
         />
       </View>
-      <Text>{test}</Text>
       <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
     </View>
   );
@@ -67,9 +106,7 @@ export default function LoginScreen({}: Props) {
 const style = StyleSheet.create({
   container: {
     backgroundColor: themeColor.white,
-    width: '100%',
-    height: '100%',
-    display: 'flex',
+    flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
   },
@@ -80,11 +117,9 @@ const style = StyleSheet.create({
   },
   input: {
     width: pxToDp(327),
-    height: pxToDp(58),
+    height: pxToDp(46),
     borderBottomColor: '#bbbbbb',
-    // borderBottomWidth: pxToDp(1),
-    // FIXME 测试样式
-    borderWidth: 1,
+    borderBottomWidth: pxToDp(1),
     fontSize: pxToDp(16),
     color: '#3611d1e',
     marginTop: pxToDp(16),
@@ -93,7 +128,6 @@ const style = StyleSheet.create({
     width: pxToDp(327),
     height: pxToDp(48),
     backgroundColor: themeColor.yellow,
-    display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: pxToDp(3),

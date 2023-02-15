@@ -36,7 +36,7 @@ const WelcomeScreen = (props: Props) => {
             title="注册"
             viewStyle={{ ...style.buttonView, marginBottom: pxToDp(10), backgroundColor: themeColor.lightBrown }}
             textStyle={style.buttonText}
-            onPress={() => linkTo('/register')}
+            onPress={() => linkTo('/register/regist')}
           />
           <Button
             title="登陆"
