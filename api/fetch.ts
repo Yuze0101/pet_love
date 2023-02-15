@@ -1,7 +1,9 @@
+import storage from '../utils/storage';
 const baseUrl = 'https://www.wlztrpa.com';
 const headers = {
   Accept: 'application/json',
   'Content-Type': 'application/json',
+  Token: '',
 };
 
 type HttpsProps = {
@@ -32,6 +34,17 @@ export const get = (props: HttpsProps) => {
   });
 };
 export const post = (props: HttpsProps) => {
+  storage
+    .load({
+      key: 'token',
+    })
+    .then(value => {
+      console.log('Storage load token : ' + value);
+      // headers.Token = value;
+    })
+    .catch(error => {
+      console.log('Err: ' + error);
+    });
   return new Promise((resolve, reject) => {
     fetch(baseUrl + props.url, {
       method: 'POST',

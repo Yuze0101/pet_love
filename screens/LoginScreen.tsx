@@ -6,6 +6,7 @@ import Button from '../components/Button';
 import Colors from '../constants/Colors';
 import { pxToDp } from '../constants/Layout';
 import { login } from '../api';
+import storage from '../utils/storage';
 
 const icon = require('../assets/images/icon.png');
 const { themeColor } = Colors;
@@ -24,12 +25,18 @@ export default function LoginScreen() {
 
   const userLogin = async () => {
     try {
-      const res = await login(userLoginParams);
+      const res: any = await login(userLoginParams);
       Toast.show('Request success. ' + JSON.stringify(res), {
         position: Toast.positions.CENTER,
       });
       // TODO 保存token
       console.log('login res : ' + JSON.stringify(res));
+      if (res.success) {
+        storage.save({
+          key: 'token',
+          data: res.data,
+        });
+      }
     } catch (error) {
       console.error('Err: ' + error);
     }

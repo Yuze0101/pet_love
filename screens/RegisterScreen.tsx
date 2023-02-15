@@ -75,6 +75,7 @@ export default function RegisterScreen() {
   const userRegister = async () => {
     try {
       const res = await register(registerParams);
+      // TODO 按钮倒计时
       Toast.show('res is : ' + JSON.stringify(res));
     } catch (error) {
       console.error('Err: ' + error);
