@@ -25,7 +25,10 @@ export default function LoginScreen() {
   const userLogin = async () => {
     try {
       const res = await login(userLoginParams);
-      Toast.show('Request success. ' + JSON.stringify(res));
+      Toast.show('Request success. ' + JSON.stringify(res), {
+        position: Toast.positions.CENTER,
+      });
+      // TODO 保存token
       console.log('login res : ' + JSON.stringify(res));
     } catch (error) {
       console.error('Err: ' + error);
@@ -49,6 +52,7 @@ export default function LoginScreen() {
           style={style.input}
           textContentType={'username'}
           returnKeyType={'next'}
+          keyboardType={'number-pad'}
           onChangeText={phoneNumber => {
             userLoginParams.phoneNumber = phoneNumber;
           }}
@@ -79,9 +83,7 @@ export default function LoginScreen() {
 const style = StyleSheet.create({
   container: {
     backgroundColor: themeColor.white,
-    width: '100%',
-    height: '100%',
-    display: 'flex',
+    flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
   },
@@ -92,11 +94,9 @@ const style = StyleSheet.create({
   },
   input: {
     width: pxToDp(327),
-    height: pxToDp(58),
+    height: pxToDp(46),
     borderBottomColor: '#bbbbbb',
-    // borderBottomWidth: pxToDp(1),
-    // FIXME 测试样式
-    borderWidth: 1,
+    borderBottomWidth: pxToDp(1),
     fontSize: pxToDp(16),
     color: '#3611d1e',
     marginTop: pxToDp(16),
