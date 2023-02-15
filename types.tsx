@@ -19,7 +19,7 @@ export type RootStackParamList = {
   NotFound: undefined;
   Welcome: undefined;
   Login: undefined;
-  Register: undefined;
+  Register: NavigatorScreenParams<RootTabParamList> | undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<

@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, TextInput, Image, Platform, StyleSheet, KeyboardAvoidingView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-root-toast';
 import { StatusBar } from 'expo-status-bar';
+import { RootStackScreenProps } from '../types';
 import Button from '../components/Button';
 import Colors from '../constants/Colors';
 import { pxToDp } from '../constants/Layout';
@@ -59,7 +60,7 @@ const registerParams: RegisterParams = {
   password: '',
   confirmPassword: '',
 };
-export default function RegisterScreen() {
+export default function RegisterScreen({ route, navigation }: RootStackScreenProps<'Register'>) {
   const insets = useSafeAreaInsets();
 
   const userGetVerificationCode = async () => {
@@ -81,6 +82,12 @@ export default function RegisterScreen() {
       console.error('Err: ' + error);
     }
   };
+  useEffect(() => {
+    console.log('register mounted : ' + JSON.stringify(route.params));
+    //@ts-ignore
+    setTitle(route?.params?.status == 'regist' ? '注册 & 登陆' : '重制密码 & 登陆');
+  }, []);
+  const [title, setTitle] = useState('');
   const [checkResult, setCheckResult] = useState({});
   return (
     <KeyboardAvoidingView
@@ -98,7 +105,7 @@ export default function RegisterScreen() {
         const result = checkResult[key];
         if (!result.isOk) {
           return (
-            <Text style={{ position: 'absolute', marginTop: pxToDp(20 * index),paddingTop:pxToDp(20) }} key={key}>
+            <Text style={{ position: 'absolute', marginTop: pxToDp(20 * index), paddingTop: pxToDp(20) }} key={key}>
               {result.errorMsg}
             </Text>
           );
@@ -165,7 +172,7 @@ export default function RegisterScreen() {
         }}
       />
       <Button
-        title="注册"
+        title={title}
         viewStyle={{ ...style.buttonView, marginTop: pxToDp(32) }}
         textStyle={style.buttonText}
         onPress={() => {

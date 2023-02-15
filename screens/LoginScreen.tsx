@@ -1,6 +1,7 @@
 import { View, TextInput, Image, Platform, StyleSheet } from 'react-native';
 import Toast from 'react-native-root-toast';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useLinkTo } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import Button from '../components/Button';
 import Colors from '../constants/Colors';
@@ -18,6 +19,7 @@ type LoginParams = {
 
 export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'>) {
   const insets = useSafeAreaInsets();
+  const linkTo = useLinkTo()
 
   const userLoginParams: LoginParams = {
     phoneNumber: '',
@@ -83,6 +85,18 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
           textStyle={style.buttonText}
           onPress={() => userLogin()}
         />
+        <Button
+          title="忘记密码"
+          viewStyle={{
+            width: pxToDp(327),
+            height: pxToDp(20),
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginTop: pxToDp(32),
+          }}
+          textStyle={{ fontSize: pxToDp(14), color: '#9c9494' }}
+          onPress={() => linkTo('/register/resetPassword')}
+        />
       </View>
       <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
     </View>
@@ -114,7 +128,6 @@ const style = StyleSheet.create({
     width: pxToDp(327),
     height: pxToDp(48),
     backgroundColor: themeColor.yellow,
-    display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: pxToDp(3),
