@@ -19,7 +19,7 @@ type LoginParams = {
 
 export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'>) {
   const insets = useSafeAreaInsets();
-  const linkTo = useLinkTo()
+  const linkTo = useLinkTo();
 
   const userLoginParams: LoginParams = {
     phoneNumber: '',
@@ -39,8 +39,8 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
           key: 'token',
           data: res.data,
         });
+        navigation.replace('Root');
       }
-      navigation.replace('Root');
     } catch (error) {
       console.error('Err: ' + error);
     }
