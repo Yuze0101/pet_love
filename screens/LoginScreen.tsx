@@ -37,7 +37,7 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
       if (res.success) {
         storage.save({
           key: 'token',
-          data: res.data,
+          data: res.data?.token,
         });
         navigation.replace('Root');
       }

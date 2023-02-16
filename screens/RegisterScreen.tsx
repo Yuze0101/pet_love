@@ -3,11 +3,12 @@ import { View, Text, TextInput, Image, Platform, StyleSheet, KeyboardAvoidingVie
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-root-toast';
 import { StatusBar } from 'expo-status-bar';
+import storage from '../utils/storage';
 import { RootStackScreenProps } from '../types';
 import Button from '../components/Button';
 import Colors from '../constants/Colors';
 import { pxToDp } from '../constants/Layout';
-import { register, getVerificationCode } from '../api';
+import { login, register, getVerificationCode } from '../api';
 const locked = require('../assets/images/locked.png');
 const { themeColor } = Colors;
 type RegisterParams = {
@@ -68,6 +69,7 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
       const res = await getVerificationCode({
         phoneNumber: registerParams.phoneNumber,
       });
+      // TODO 按钮倒计时
       Toast.show('res is : ' + JSON.stringify(res));
     } catch (error) {
       console.error('Err: ' + error);
@@ -75,9 +77,33 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
   };
   const userRegister = async () => {
     try {
-      const res = await register(registerParams);
-      // TODO 按钮倒计时
-      Toast.show('res is : ' + JSON.stringify(res));
+      const res: any = await register(registerParams);
+      console.log('res is : ' + JSON.stringify(res));
+      if (res.success) {
+        userLogin();
+      }
+    } catch (error) {
+      console.error('Err: ' + error);
+    }
+  };
+  const userLogin = async () => {
+    try {
+      const res: any = await login({
+        phoneNumber: registerParams.phoneNumber,
+        password: registerParams.password,
+      });
+      Toast.show('Request success. ' + JSON.stringify(res), {
+        position: Toast.positions.CENTER,
+      });
+      // TODO 保存token
+      console.log('login res : ' + JSON.stringify(res));
+      if (res.success) {
+        storage.save({
+          key: 'token',
+          data: res.data?.token,
+        });
+        navigation.replace('Root');
+      }
     } catch (error) {
       console.error('Err: ' + error);
     }
