@@ -1,8 +1,9 @@
-import { View, TextInput, Image, Platform, StyleSheet } from 'react-native';
+import { View, TextInput, Image, StyleSheet } from 'react-native';
 import Toast from 'react-native-root-toast';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLinkTo } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
+
 import Button from '../components/Button';
 import Colors from '../constants/Colors';
 import { pxToDp } from '../constants/Layout';

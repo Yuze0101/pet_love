@@ -3,6 +3,7 @@ import { View, Text, TextInput, Image, Platform, StyleSheet, KeyboardAvoidingVie
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-root-toast';
 import { StatusBar } from 'expo-status-bar';
+
 import storage from '../utils/storage';
 import { RootStackScreenProps } from '../types';
 import Button from '../components/Button';
