@@ -1,27 +1,40 @@
 import { useState, useEffect } from 'react';
-import { View, Text, TextInput, Image, Platform, StyleSheet, KeyboardAvoidingView } from 'react-native';
+import { View, Image, Platform, StyleSheet, KeyboardAvoidingView, TouchableWithoutFeedback } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-root-toast';
 import { StatusBar } from 'expo-status-bar';
+import { Button, Text, Input, Icon } from '@ui-kitten/components';
 
 import storage from '../utils/storage';
 import { RootStackScreenProps } from '../types';
-import Button from '../components/Button';
 import Colors from '../constants/Colors';
 import { pxToDp } from '../constants/Layout';
 import { login, register, getVerificationCode } from '../api';
 const locked = require('../assets/images/locked.png');
-const { themeColor } = Colors;
+// const { themeColor } = Colors;
 type RegisterParams = {
   phoneNumber: number;
   verificationCode: number;
   password: string;
   confirmPassword: string;
 };
+
+const ShowIcon = (props: any) => (
+  <Icon
+    style={{ width: pxToDp(12), height: pxToDp(12), marginRight: pxToDp(3) }}
+    fill={props.color}
+    name={props.name}
+  />
+);
+
 const validateRegisterParams = (registerParams: RegisterParams) => {
-  const checkResult = {};
-  let isOk = false,
-    errorMsg = '';
+  const checkResult = {
+    phoneNumber: false,
+    verificationCode: false,
+    password: false,
+    confirmPassword: false,
+  };
+  let isOk = false;
   for (const key in registerParams) {
     //@ts-ignore
     let value = registerParams[key];
@@ -29,29 +42,22 @@ const validateRegisterParams = (registerParams: RegisterParams) => {
       case 'phoneNumber':
         // 手机号验证
         isOk = /^1(3\d|4[5-9]|5[0-35-9]|6[567]|7[0-8]|8\d|9[0-35-9])\d{8}$/.test(value);
-        errorMsg = isOk ? 'Ok' : '您需要输入正确的手机号';
         break;
       case 'verificationCode':
         // 纯数字验证
-        isOk = String(value).length <= 4;
-        errorMsg = isOk ? 'Ok' : '验证码只能4位数字';
+        isOk = String(value).length == 4;
         break;
       case 'password':
-        isOk = true;
-        errorMsg = isOk ? 'Ok' : '待补充';
+        isOk = value.length == 8;
         break;
       case 'confirmPassword':
-        isOk = true;
-        errorMsg = isOk ? 'Ok' : '待补充';
+        isOk = registerParams[key] == registerParams.password;
         break;
       default:
         break;
     }
     //@ts-ignore
-    checkResult[key] = {
-      isOk,
-      errorMsg,
-    };
+    checkResult[key] = isOk;
   }
   Toast.show(JSON.stringify(checkResult));
   return checkResult;
@@ -65,6 +71,14 @@ const registerParams: RegisterParams = {
 export default function RegisterScreen({ route, navigation }: RootStackScreenProps<'Register'>) {
   const insets = useSafeAreaInsets();
 
+  useEffect(() => {
+    //@ts-ignore
+    setTitle(route?.params?.status == 'regist' ? '注册 & 登陆' : '重制密码 & 登陆');
+  }, []);
+  const [title, setTitle] = useState('');
+  const [checkResult, setCheckResult] = useState({});
+  const [secureTextEntry, setSecureTextEntry] = useState(true);
+
   const userGetVerificationCode = async () => {
     try {
       const res = await getVerificationCode({
@@ -77,6 +91,11 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
     }
   };
   const userRegister = async () => {
+    // @ts-ignore
+    if (!Object.keys(checkResult).every(result => checkResult[result] == true)) {
+      Toast.show('注册信息不合法，请修改');
+      return;
+    }
     try {
       const res: any = await register(registerParams);
       console.log('res is : ' + JSON.stringify(res));
@@ -109,13 +128,26 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
       console.error('Err: ' + error);
     }
   };
-  useEffect(() => {
-    console.log('register mounted : ' + JSON.stringify(route.params));
-    //@ts-ignore
-    setTitle(route?.params?.status == 'regist' ? '注册 & 登陆' : '重制密码 & 登陆');
-  }, []);
-  const [title, setTitle] = useState('');
-  const [checkResult, setCheckResult] = useState({});
+  const renderIcon = (props: any) => (
+    <TouchableWithoutFeedback onPress={toggleSecureEntry}>
+      <Icon {...props} name={secureTextEntry ? 'eye-off' : 'eye'} />
+    </TouchableWithoutFeedback>
+  );
+  const renderCaption = (props: any) => {
+    return (
+      <View style={{ flexDirection: 'row', alignItems: 'center', height: pxToDp(12) }}>
+        {ShowIcon({
+          color: props.isOk ? '#3DE27C' : '#FF5182',
+          name: props.isOk ? 'checkmark-outline' : 'alert-circle-outline',
+        })}
+        <Text style={{ color: '#FF5182', fontSize: pxToDp(11) }}>{!props.isOk ? props.rule : ''}</Text>
+      </View>
+    );
+  };
+
+  const toggleSecureEntry = () => {
+    setSecureTextEntry(!secureTextEntry);
+  };
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -123,26 +155,17 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
         ...style.container,
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
-        paddingLeft: insets.left,
-        paddingRight: insets.right,
+        paddingLeft: pxToDp(24),
+        paddingRight: pxToDp(24),
       }}
     >
-      {Object.keys(checkResult).map((key, index) => {
-        // @ts-ignore
-        const result = checkResult[key];
-        if (!result.isOk) {
-          return (
-            <Text style={{ position: 'absolute', marginTop: pxToDp(20 * index), paddingTop: pxToDp(20) }} key={key}>
-              {result.errorMsg}
-            </Text>
-          );
-        }
-      })}
       <Image source={locked} style={style.image} />
-      <TextInput
+      <Input
         placeholder="手机号码"
         placeholderTextColor={'#361D1E50'}
-        style={style.input}
+        // @ts-ignore
+        caption={() => renderCaption({ rule: '手机号码不合法', isOk: checkResult.phoneNumber })}
+        size={'large'}
         textContentType={'username'}
         returnKeyType={'next'}
         keyboardType={'number-pad'}
@@ -152,10 +175,13 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
         }}
       />
       <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-        <TextInput
+        <Input
           placeholder="验证码"
           placeholderTextColor={'#361D1E50'}
-          style={{ ...style.input, width: pxToDp(210) }}
+          // @ts-ignore
+          caption={() => renderCaption({ rule: '验证码必须为4位数字', isOk: checkResult.verificationCode })}
+          size="large"
+          style={{ marginTop: pxToDp(16), width: pxToDp(210) }}
           keyboardType={'number-pad'}
           textContentType={'oneTimeCode'}
           returnKeyType={'next'}
@@ -165,20 +191,27 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
           }}
         />
         <Button
-          title="获取验证码"
-          viewStyle={{
-            ...style.buttonView,
-            ...style.buttonBrownView,
-          }}
-          textStyle={style.buttonBrownText}
+          status="info"
+          size="large"
+          style={{ flex: 1, marginLeft: pxToDp(5) }}
           onPress={() => userGetVerificationCode()}
-        ></Button>
+        >
+          {evaProps => (
+            <Text {...evaProps} style={style.buttonBrownText}>
+              获取验证码
+            </Text>
+          )}
+        </Button>
       </View>
-      <TextInput
+      <Input
         placeholder="新的密码"
+        size={'large'}
         placeholderTextColor={'#361D1E50'}
-        style={style.input}
-        secureTextEntry={true}
+        // @ts-ignore
+        caption={() => renderCaption({ rule: '密码必须大于8位', isOk: checkResult.password })}
+        accessoryRight={renderIcon}
+        style={{ marginTop: pxToDp(16) }}
+        secureTextEntry={secureTextEntry}
         textContentType={'newPassword'}
         returnKeyType={'next'}
         onChangeText={string => {
@@ -186,11 +219,15 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
           setCheckResult(validateRegisterParams(registerParams));
         }}
       />
-      <TextInput
+      <Input
         placeholder="确认密码"
+        size={'large'}
         placeholderTextColor={'#361D1E50'}
-        style={style.input}
-        secureTextEntry={true}
+        style={{ marginTop: pxToDp(16) }}
+        secureTextEntry={secureTextEntry}
+        // @ts-ignore
+        caption={() => renderCaption({ rule: '确认密码必须和新的密码一致', isOk: checkResult.confirmPassword })}
+        accessoryRight={renderIcon}
         textContentType={'newPassword'}
         returnKeyType={'done'}
         onChangeText={string => {
@@ -198,14 +235,13 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
           setCheckResult(validateRegisterParams(registerParams));
         }}
       />
-      <Button
-        title={title}
-        viewStyle={{ ...style.buttonView, marginTop: pxToDp(32) }}
-        textStyle={style.buttonText}
-        onPress={() => {
-          userRegister();
-        }}
-      />
+      <Button style={{ ...style.button, marginTop: pxToDp(32) }} onPress={() => userRegister()}>
+        {evaProps => (
+          <Text {...evaProps} style={style.font}>
+            {title}
+          </Text>
+        )}
+      </Button>
       <StatusBar style={'auto'} />
     </KeyboardAvoidingView>
   );
@@ -213,7 +249,7 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
 
 const style = StyleSheet.create({
   container: {
-    backgroundColor: themeColor.white,
+    // backgroundColor: themeColor.white,
     flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
@@ -225,35 +261,19 @@ const style = StyleSheet.create({
     marginBottom: pxToDp(20),
   },
   input: {
-    width: pxToDp(327),
-    height: pxToDp(46),
-    borderBottomColor: '#bbbbbb',
-    borderBottomWidth: pxToDp(1),
     fontSize: pxToDp(16),
     color: '#3611d1e',
     marginTop: pxToDp(16),
-    borderWidth: 1,
-    // paddingLeft: pxToDp(5),
-    // paddingRight: pxToDp(5),
   },
-  buttonView: {
+  button: {
     width: pxToDp(327),
     height: pxToDp(48),
-    backgroundColor: themeColor.yellow,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
     borderRadius: pxToDp(3),
   },
-  buttonText: {
-    color: '#fff',
+  font: {
     fontSize: pxToDp(18),
+    fontWeight: 'bold',
+    color: '#ffffff',
   },
-  buttonBrownView: {
-    height: pxToDp(34),
-    width: pxToDp(118),
-    backgroundColor: themeColor.darkBrown,
-    marginBottom: pxToDp(5),
-  },
-  buttonBrownText: { fontSize: pxToDp(11), color: '#F8BC3C', fontWeight: 'bold' },
+  buttonBrownText: { fontSize: pxToDp(12), color: '#F8BC3C', fontWeight: 'bold' },
 });

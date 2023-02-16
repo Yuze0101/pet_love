@@ -52,8 +52,8 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
         ...style.container,
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
-        paddingLeft: insets.left,
-        paddingRight: insets.right,
+        paddingLeft: pxToDp(24),
+        paddingRight: pxToDp(24),
       }}
     >
       <Image source={icon} style={style.image} />

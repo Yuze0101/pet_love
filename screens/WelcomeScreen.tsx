@@ -1,9 +1,9 @@
-import { Text, View, Image, StyleSheet } from 'react-native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { View, Image, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLinkTo } from '@react-navigation/native';
 import { pxToDp } from '../constants/Layout';
-import Button from '../components/Button';
+import { Button, Text } from '@ui-kitten/components';
+
 import Colors from '../constants/Colors';
 const { themeColor } = Colors;
 const icon = require('../assets/images/icon.png');
@@ -27,22 +27,32 @@ const WelcomeScreen = (props: Props) => {
       <View style={style.container}>
         <View style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
           <Image source={icon} style={style.image} />
-          <Text style={style.mainTitle}>宠趣</Text>
-          <Text style={style.subTitle}>他的每一天</Text>
+          <Text category="h1" style={{ color: '#ffffff', paddingTop: pxToDp(45) }}>
+            宠趣
+          </Text>
+          <Text category="h6" style={{ color: '#ffffff', paddingTop: pxToDp(21) }}>
+            他的每一天
+          </Text>
         </View>
         <View>
           <Button
-            title="注册"
-            viewStyle={{ ...style.buttonView, marginBottom: pxToDp(10), backgroundColor: themeColor.lightBrown }}
-            textStyle={style.buttonText}
+            status="info"
+            style={{ ...style.button, marginBottom: pxToDp(24) }}
             onPress={() => linkTo('/register/regist')}
-          />
-          <Button
-            title="登陆"
-            viewStyle={style.buttonView}
-            textStyle={style.buttonText}
-            onPress={() => linkTo('/login')}
-          />
+          >
+            {evaProps => (
+              <Text  {...evaProps} style={style.font} >
+                注册
+              </Text>
+            )}
+          </Button>
+          <Button style={style.button} onPress={() => linkTo('/login')}>
+            {evaProps => (
+              <Text {...evaProps} style={style.font}>
+                登陆
+              </Text>
+            )}
+          </Button>
         </View>
       </View>
     </View>
@@ -50,15 +60,13 @@ const WelcomeScreen = (props: Props) => {
 };
 const style = StyleSheet.create({
   safeArea: {
-    backgroundColor: themeColor.yellow,
-    width: '100%',
-    height: '100%',
+    backgroundColor: 'red',
+    flex: 1,
   },
   container: {
     backgroundColor: themeColor.orange,
     width: '100%',
     height: '100%',
-    display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -69,30 +77,15 @@ const style = StyleSheet.create({
     width: pxToDp(125),
     height: pxToDp(125),
   },
-  mainTitle: {
-    fontWeight: 'bold',
-    fontSize: pxToDp(32),
-    color: '#ffffff',
-    paddingTop: pxToDp(45),
-  },
-  subTitle: {
-    fontWeight: 'bold',
-    fontSize: pxToDp(16),
-    color: '#ffffff',
-    paddingTop: pxToDp(24),
-  },
-  buttonView: {
+  button: {
     width: pxToDp(327),
     height: pxToDp(48),
-    backgroundColor: themeColor.yellow,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
     borderRadius: pxToDp(3),
   },
-  buttonText: {
-    color: '#fff',
+  font: {
     fontSize: pxToDp(18),
+    fontWeight: 'bold',
+    color: '#ffffff',
   },
 });
 export default WelcomeScreen;

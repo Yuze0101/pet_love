@@ -1,4 +1,5 @@
-import { Text, ViewStyle, TextStyle, Pressable, PressableProps } from 'react-native';
+import {  ViewStyle, TextStyle, Pressable, PressableProps } from 'react-native';
+import { Text } from '@ui-kitten/components';
 interface Props extends PressableProps {
   title?: string;
   viewStyle?: ViewStyle;
