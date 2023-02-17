@@ -103,7 +103,6 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
       Toast.show('Request success. ' + JSON.stringify(res), {
         position: Toast.positions.CENTER,
       });
-      // TODO 保存token
       console.log('login res : ' + JSON.stringify(res));
       if (res.success) {
         storage.save({

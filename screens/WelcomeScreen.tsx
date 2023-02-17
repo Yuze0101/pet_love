@@ -16,7 +16,6 @@ const WelcomeScreen = (props: Props) => {
   return (
     <View
       style={{
-        // FIXME 去掉安全区颜色
         backgroundColor: themeColor.orange,
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
