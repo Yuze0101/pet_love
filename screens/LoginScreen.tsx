@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Image, StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import { View, Image, StyleSheet, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import Toast from 'react-native-root-toast';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLinkTo } from '@react-navigation/native';
@@ -116,16 +116,17 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
     }
   };
   return (
-    <View
-      style={{
-        ...style.container,
-        paddingTop: insets.top,
-        paddingBottom: insets.bottom,
-        paddingLeft: pxToDp(24),
-        paddingRight: pxToDp(24),
-      }}
-    >
-      <View style={{ height: pxToDp(45), width: '100%', flexDirection: 'row' }}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View
+        style={{
+          ...style.container,
+          paddingTop: insets.top,
+          paddingBottom: insets.bottom,
+          paddingLeft: pxToDp(24),
+          paddingRight: pxToDp(24),
+        }}
+      >
+        <View style={{ height: pxToDp(45), width: '100%', flexDirection: 'row' }}>
           <Button
             // appearance="outline"
             status="basic"
@@ -142,58 +143,59 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
               width: pxToDp(45),
               borderRadius: pxToDp(45),
             }}
-            onPress={()=> navigation.goBack()}
+            onPress={() => navigation.goBack()}
           />
         </View>
-      <Image source={icon} style={style.image} />
-      <View>
-        <Input
-          placeholder="手机号码"
-          placeholderTextColor={'#361D1E50'}
-          // @ts-ignore
-          caption={() => renderCaption({ rule: '手机号码不合法', isOk: checkResult.phoneNumber })}
-          size={'large'}
-          textContentType={'username'}
-          returnKeyType={'next'}
-          keyboardType={'number-pad'}
-          onChangeText={phoneNumber => {
-            userLoginParams.phoneNumber = phoneNumber;
-            setCheckResult(validateLoginParams(userLoginParams));
-          }}
-        />
-        <Input
-          placeholder="新的密码"
-          size={'large'}
-          placeholderTextColor={'#361D1E50'}
-          // @ts-ignore
-          caption={() => renderCaption({ rule: '密码必须大于8位', isOk: checkResult.password })}
-          accessoryRight={renderIcon}
-          style={{ marginTop: pxToDp(16) }}
-          secureTextEntry={secureTextEntry}
-          textContentType={'newPassword'}
-          returnKeyType={'next'}
-          onChangeText={password => {
-            userLoginParams.password = password;
-            setCheckResult(validateLoginParams(userLoginParams));
-          }}
-        />
-        <Button style={{ ...style.button, marginTop: pxToDp(32) }} onPress={() => userLogin()}>
-          {evaProps => (
-            <Text {...evaProps} style={style.font}>
-              {loginButtonIsLoading ? <Spinner status="control" /> : '登陆'}
-            </Text>
-          )}
-        </Button>
-        <Button
-          appearance="ghost"
-          style={{ ...style.button, marginTop: pxToDp(32) }}
-          onPress={() => linkTo('/register/resetPassword')}
-        >
-          {evaProps => <Text {...evaProps}>忘记密码</Text>}
-        </Button>
+        <Image source={icon} style={style.image} />
+        <View>
+          <Input
+            placeholder="手机号码"
+            placeholderTextColor={'#361D1E50'}
+            // @ts-ignore
+            caption={() => renderCaption({ rule: '手机号码不合法', isOk: checkResult.phoneNumber })}
+            size={'large'}
+            textContentType={'username'}
+            returnKeyType={'next'}
+            keyboardType={'number-pad'}
+            onChangeText={phoneNumber => {
+              userLoginParams.phoneNumber = phoneNumber;
+              setCheckResult(validateLoginParams(userLoginParams));
+            }}
+          />
+          <Input
+            placeholder="新的密码"
+            size={'large'}
+            placeholderTextColor={'#361D1E50'}
+            // @ts-ignore
+            caption={() => renderCaption({ rule: '密码必须大于8位', isOk: checkResult.password })}
+            accessoryRight={renderIcon}
+            style={{ marginTop: pxToDp(16) }}
+            secureTextEntry={secureTextEntry}
+            textContentType={'newPassword'}
+            returnKeyType={'next'}
+            onChangeText={password => {
+              userLoginParams.password = password;
+              setCheckResult(validateLoginParams(userLoginParams));
+            }}
+          />
+          <Button style={{ ...style.button, marginTop: pxToDp(32) }} onPress={() => userLogin()}>
+            {evaProps => (
+              <Text {...evaProps} style={style.font}>
+                {loginButtonIsLoading ? <Spinner status="control" /> : '登陆'}
+              </Text>
+            )}
+          </Button>
+          <Button
+            appearance="ghost"
+            style={{ ...style.button, marginTop: pxToDp(32) }}
+            onPress={() => linkTo('/register/resetPassword')}
+          >
+            {evaProps => <Text {...evaProps}>忘记密码</Text>}
+          </Button>
+        </View>
+        <StatusBar style={'auto'} />
       </View>
-      <StatusBar style={'auto'} />
-    </View>
+    </TouchableWithoutFeedback>
   );
 }
 

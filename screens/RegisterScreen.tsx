@@ -192,8 +192,7 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
   };
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      <View
         style={{
           ...style.container,
           paddingTop: insets.top,
@@ -288,6 +287,8 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
             setCheckResult(validateRegisterParams(registerParams));
           }}
         />
+        {/* TODO 对键盘高度做自适应 */}
+        <KeyboardAvoidingView style={{width:'100%'}} behavior={Platform.OS === 'ios' ? 'position':'height'}>
         <Input
           placeholder="确认密码"
           size={'large'}
@@ -304,6 +305,8 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
             setCheckResult(validateRegisterParams(registerParams));
           }}
         />
+        </KeyboardAvoidingView>
+      
         <Button style={{ ...style.button, marginTop: pxToDp(32) }} onPress={() => userRegister()}>
           {evaProps => (
             <Text {...evaProps} style={style.font}>
@@ -312,7 +315,7 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
           )}
         </Button>
         <StatusBar style={'auto'} />
-      </KeyboardAvoidingView>
+      </View>
     </TouchableWithoutFeedback>
   );
 }
