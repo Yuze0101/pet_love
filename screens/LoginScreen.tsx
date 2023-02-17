@@ -119,12 +119,32 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
     <View
       style={{
         ...style.container,
-        paddingTop: pxToDp(24),
-        // paddingBottom: insets.bottom,
+        paddingTop: insets.top,
+        paddingBottom: insets.bottom,
         paddingLeft: pxToDp(24),
         paddingRight: pxToDp(24),
       }}
     >
+      <View style={{ height: pxToDp(45), width: '100%', flexDirection: 'row' }}>
+          <Button
+            // appearance="outline"
+            status="basic"
+            accessoryRight={() => {
+              return (
+                <Icon
+                  fill={themeColor.orange}
+                  style={{ width: pxToDp(18), height: pxToDp(18) }}
+                  name="arrow-back-outline"
+                />
+              );
+            }}
+            style={{
+              width: pxToDp(45),
+              borderRadius: pxToDp(45),
+            }}
+            onPress={()=> navigation.goBack()}
+          />
+        </View>
       <Image source={icon} style={style.image} />
       <View>
         <Input
@@ -179,7 +199,7 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
 
 const style = StyleSheet.create({
   container: {
-    backgroundColor: themeColor.white,
+    // backgroundColor: themeColor.white,
     flex: 1,
     flexDirection: 'column',
     alignItems: 'center',

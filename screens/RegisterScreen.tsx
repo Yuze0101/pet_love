@@ -11,7 +11,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-root-toast';
 import { StatusBar } from 'expo-status-bar';
-import { Button, Text, Input, Icon, Spinner } from '@ui-kitten/components';
+import { Button, Text, Input, Icon, Spinner, Card } from '@ui-kitten/components';
 
 import storage from '../utils/storage';
 import { RootStackScreenProps } from '../types';
@@ -196,12 +196,33 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{
           ...style.container,
-          paddingTop: pxToDp(24),
-          // paddingBottom: insets.bottom,
+          paddingTop: insets.top,
+          paddingBottom: insets.bottom,
           paddingLeft: pxToDp(24),
           paddingRight: pxToDp(24),
         }}
       >
+        <View style={{ height: pxToDp(45), width: '100%', flexDirection: 'row' }}>
+          <Button
+            // appearance="outline"
+            status="basic"
+            accessoryRight={() => {
+              return (
+                <Icon
+                  fill={themeColor.orange}
+                  style={{ width: pxToDp(18), height: pxToDp(18) }}
+                  name="arrow-back-outline"
+                />
+              );
+            }}
+            style={{
+              width: pxToDp(45),
+              borderRadius: pxToDp(45),
+            }}
+            onPress={()=> navigation.goBack()}
+          />
+        </View>
+
         <Image source={locked} style={style.image} />
         <Input
           placeholder="手机号码"
@@ -298,16 +319,15 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
 
 const style = StyleSheet.create({
   container: {
-    backgroundColor: themeColor.white,
+    // backgroundColor: themeColor.white,
     flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'flex-start',
   },
   image: {
     width: pxToDp(64),
     height: pxToDp(80),
-    // marginTop: pxToDp(20),
+    marginTop: pxToDp(20),
     marginBottom: pxToDp(40),
   },
   button: {
