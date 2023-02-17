@@ -60,7 +60,7 @@ const ShowIcon = (props: any) => (
 );
 const renderCaption = (props: any) => {
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', height: pxToDp(12) }}>
+    <View style={{ flexDirection: 'row', alignItems: 'center', height: pxToDp(13) }}>
       {ShowIcon({
         color: props.isOk ? '#3DE27C' : '#FF5182',
         name: props.isOk ? 'checkmark-outline' : 'alert-circle-outline',
@@ -79,10 +79,15 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
     phoneNumber: false,
     password: false,
   });
-
+  const workAround = (props: any) => {
+    const newObj = Object.assign({}, props);
+    newObj.fill = newObj['style']['tintColor'];
+    delete newObj.style.tintColor;
+    return newObj;
+  };
   const renderIcon = (props: any) => (
     <TouchableWithoutFeedback onPress={toggleSecureEntry}>
-      <Icon {...props} name={secureTextEntry ? 'eye-off' : 'eye'} />
+      <Icon {...workAround(props)} name={secureTextEntry ? 'eye-off' : 'eye'} />
     </TouchableWithoutFeedback>
   );
 
@@ -115,8 +120,8 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
     <View
       style={{
         ...style.container,
-        paddingTop: insets.top,
-        paddingBottom: insets.bottom,
+        paddingTop: pxToDp(24),
+        // paddingBottom: insets.bottom,
         paddingLeft: pxToDp(24),
         paddingRight: pxToDp(24),
       }}
@@ -156,7 +161,7 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
         <Button style={{ ...style.button, marginTop: pxToDp(32) }} onPress={() => userLogin()}>
           {evaProps => (
             <Text {...evaProps} style={style.font}>
-              {loginButtonIsLoading ? <Spinner status='control' /> : '登陆'}
+              {loginButtonIsLoading ? <Spinner status="control" /> : '登陆'}
             </Text>
           )}
         </Button>
@@ -167,18 +172,6 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
         >
           {evaProps => <Text {...evaProps}>忘记密码</Text>}
         </Button>
-        {/* <Button
-          title="忘记密码"
-          viewStyle={{
-            width: pxToDp(327),
-            height: pxToDp(20),
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginTop: pxToDp(32),
-          }}
-          textStyle={{ fontSize: pxToDp(14), color: '#9c9494' }}
-          onPress={() => linkTo('/register/resetPassword')}
-        /> */}
       </View>
       <StatusBar style={'auto'} />
     </View>

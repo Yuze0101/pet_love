@@ -1,5 +1,13 @@
 import { useState, useEffect } from 'react';
-import { View, Image, Platform, StyleSheet, KeyboardAvoidingView, TouchableWithoutFeedback } from 'react-native';
+import {
+  View,
+  Image,
+  Platform,
+  StyleSheet,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-root-toast';
 import { StatusBar } from 'expo-status-bar';
@@ -28,7 +36,7 @@ const ShowIcon = (props: any) => (
 );
 const renderCaption = (props: any) => {
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', height: pxToDp(12) }}>
+    <View style={{ flexDirection: 'row', alignItems: 'center', height: pxToDp(13) }}>
       {ShowIcon({
         color: props.isOk ? '#3DE27C' : '#FF5182',
         name: props.isOk ? 'checkmark-outline' : 'alert-circle-outline',
@@ -167,9 +175,15 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
       console.error('Err: ' + error);
     }
   };
+  const workAround = (props: any) => {
+    const newObj = Object.assign({}, props);
+    newObj.fill = newObj['style']['tintColor'];
+    delete newObj.style.tintColor;
+    return newObj;
+  };
   const renderIcon = (props: any) => (
     <TouchableWithoutFeedback onPress={toggleSecureEntry}>
-      <Icon {...props} name={secureTextEntry ? 'eye-off' : 'eye'} />
+      <Icon {...workAround(props)} name={secureTextEntry ? 'eye-off' : 'eye'} />
     </TouchableWithoutFeedback>
   );
 
@@ -177,106 +191,108 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
     setSecureTextEntry(!secureTextEntry);
   };
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{
-        ...style.container,
-        paddingTop: insets.top,
-        paddingBottom: insets.bottom,
-        paddingLeft: pxToDp(24),
-        paddingRight: pxToDp(24),
-      }}
-    >
-      <Image source={locked} style={style.image} />
-      <Input
-        placeholder="手机号码"
-        placeholderTextColor={'#361D1E50'}
-        // @ts-ignore
-        caption={() => renderCaption({ rule: '手机号码不合法', isOk: checkResult.phoneNumber })}
-        size={'large'}
-        textContentType={'username'}
-        returnKeyType={'next'}
-        keyboardType={'number-pad'}
-        onChangeText={number => {
-          registerParams.phoneNumber = Number(number);
-          setCheckResult(validateRegisterParams(registerParams));
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{
+          ...style.container,
+          paddingTop: pxToDp(24),
+          // paddingBottom: insets.bottom,
+          paddingLeft: pxToDp(24),
+          paddingRight: pxToDp(24),
         }}
-      />
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      >
+        <Image source={locked} style={style.image} />
         <Input
-          placeholder="验证码"
+          placeholder="手机号码"
           placeholderTextColor={'#361D1E50'}
           // @ts-ignore
-          caption={() => renderCaption({ rule: '验证码必须为4位数字', isOk: checkResult.verificationCode })}
-          size="large"
-          style={{ marginTop: pxToDp(16), width: pxToDp(210) }}
-          keyboardType={'number-pad'}
-          textContentType={'oneTimeCode'}
+          caption={() => renderCaption({ rule: '手机号码不合法', isOk: checkResult.phoneNumber })}
+          size={'large'}
+          textContentType={'username'}
           returnKeyType={'next'}
-          onChangeText={code => {
-            registerParams.verificationCode = Number(code);
+          keyboardType={'number-pad'}
+          onChangeText={number => {
+            registerParams.phoneNumber = Number(number);
             setCheckResult(validateRegisterParams(registerParams));
           }}
         />
-        <Button
-          disabled={verificationButtonStatus}
-          status="info"
-          size="large"
-          style={{ flex: 1, marginLeft: pxToDp(5), marginTop: pxToDp(3) }}
-          onPress={() => userGetVerificationCode()}
-        >
-          {evaProps =>
-            verificationButtonIsloading ? (
-              <Spinner />
-            ) : (
-              <Text {...evaProps} style={verificationButtonStatus ? style.greyText : style.brownText}>
-                {verificationButtonText}
-              </Text>
-            )
-          }
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Input
+            placeholder="验证码"
+            placeholderTextColor={'#361D1E50'}
+            // @ts-ignore
+            caption={() => renderCaption({ rule: '验证码必须为4位数字', isOk: checkResult.verificationCode })}
+            size="large"
+            style={{ marginTop: pxToDp(16), width: pxToDp(210) }}
+            keyboardType={'number-pad'}
+            textContentType={'oneTimeCode'}
+            returnKeyType={'next'}
+            onChangeText={code => {
+              registerParams.verificationCode = Number(code);
+              setCheckResult(validateRegisterParams(registerParams));
+            }}
+          />
+          <Button
+            disabled={verificationButtonStatus}
+            status="info"
+            size="large"
+            style={{ flex: 1, marginLeft: pxToDp(5), marginTop: pxToDp(3) }}
+            onPress={() => userGetVerificationCode()}
+          >
+            {evaProps =>
+              verificationButtonIsloading ? (
+                <Spinner />
+              ) : (
+                <Text {...evaProps} style={verificationButtonStatus ? style.greyText : style.brownText}>
+                  {verificationButtonText}
+                </Text>
+              )
+            }
+          </Button>
+        </View>
+        <Input
+          placeholder="新的密码"
+          size={'large'}
+          placeholderTextColor={'#361D1E50'}
+          // @ts-ignore
+          caption={() => renderCaption({ rule: '密码必须大于8位', isOk: checkResult.password })}
+          accessoryRight={renderIcon}
+          style={{ marginTop: pxToDp(16) }}
+          secureTextEntry={secureTextEntry}
+          textContentType={'newPassword'}
+          returnKeyType={'next'}
+          onChangeText={string => {
+            registerParams.password = string;
+            setCheckResult(validateRegisterParams(registerParams));
+          }}
+        />
+        <Input
+          placeholder="确认密码"
+          size={'large'}
+          placeholderTextColor={'#361D1E50'}
+          style={{ marginTop: pxToDp(16) }}
+          secureTextEntry={secureTextEntry}
+          // @ts-ignore
+          caption={() => renderCaption({ rule: '确认密码必须和新的密码一致', isOk: checkResult.confirmPassword })}
+          accessoryRight={renderIcon}
+          textContentType={'newPassword'}
+          returnKeyType={'done'}
+          onChangeText={string => {
+            registerParams.confirmPassword = string;
+            setCheckResult(validateRegisterParams(registerParams));
+          }}
+        />
+        <Button style={{ ...style.button, marginTop: pxToDp(32) }} onPress={() => userRegister()}>
+          {evaProps => (
+            <Text {...evaProps} style={style.font}>
+              {registerButtonText}
+            </Text>
+          )}
         </Button>
-      </View>
-      <Input
-        placeholder="新的密码"
-        size={'large'}
-        placeholderTextColor={'#361D1E50'}
-        // @ts-ignore
-        caption={() => renderCaption({ rule: '密码必须大于8位', isOk: checkResult.password })}
-        accessoryRight={renderIcon}
-        style={{ marginTop: pxToDp(16) }}
-        secureTextEntry={secureTextEntry}
-        textContentType={'newPassword'}
-        returnKeyType={'next'}
-        onChangeText={string => {
-          registerParams.password = string;
-          setCheckResult(validateRegisterParams(registerParams));
-        }}
-      />
-      <Input
-        placeholder="确认密码"
-        size={'large'}
-        placeholderTextColor={'#361D1E50'}
-        style={{ marginTop: pxToDp(16) }}
-        secureTextEntry={secureTextEntry}
-        // @ts-ignore
-        caption={() => renderCaption({ rule: '确认密码必须和新的密码一致', isOk: checkResult.confirmPassword })}
-        accessoryRight={renderIcon}
-        textContentType={'newPassword'}
-        returnKeyType={'done'}
-        onChangeText={string => {
-          registerParams.confirmPassword = string;
-          setCheckResult(validateRegisterParams(registerParams));
-        }}
-      />
-      <Button style={{ ...style.button, marginTop: pxToDp(32) }} onPress={() => userRegister()}>
-        {evaProps => (
-          <Text {...evaProps} style={style.font}>
-            {registerButtonText}
-          </Text>
-        )}
-      </Button>
-      <StatusBar style={'auto'} />
-    </KeyboardAvoidingView>
+        <StatusBar style={'auto'} />
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -286,6 +302,7 @@ const style = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
+    justifyContent: 'flex-start',
   },
   image: {
     width: pxToDp(64),
