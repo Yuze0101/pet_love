@@ -119,6 +119,7 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
         phoneNumber: registerParams.phoneNumber,
       });
       setVerificationButtonIsloading(false);
+      setVerificationButtonText(String(60));
       let count = 0;
       let timer = setInterval(() => {
         if (count < 60) {
