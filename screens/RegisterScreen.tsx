@@ -7,7 +7,7 @@ import { Button, Text, Input, Icon, Spinner } from '@ui-kitten/components';
 
 import storage from '../utils/storage';
 import { RootStackScreenProps } from '../types';
-import Colors from '../constants/Colors';
+// import Colors from '../constants/Colors';
 import { pxToDp } from '../constants/Layout';
 import { login, register, getVerificationCode } from '../api';
 const locked = require('../assets/images/locked.png');
@@ -26,9 +26,19 @@ const ShowIcon = (props: any) => (
     name={props.name}
   />
 );
-
+const renderCaption = (props: any) => {
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', height: pxToDp(12) }}>
+      {ShowIcon({
+        color: props.isOk ? '#3DE27C' : '#FF5182',
+        name: props.isOk ? 'checkmark-outline' : 'alert-circle-outline',
+      })}
+      <Text style={{ color: '#FF5182', fontSize: pxToDp(11) }}>{!props.isOk ? props.rule : ''}</Text>
+    </View>
+  );
+};
 const validateRegisterParams = (registerParams: RegisterParams) => {
-  const checkResult = {
+  const result = {
     phoneNumber: false,
     verificationCode: false,
     password: false,
@@ -48,18 +58,18 @@ const validateRegisterParams = (registerParams: RegisterParams) => {
         isOk = String(value).length == 4;
         break;
       case 'password':
-        isOk = value.length == 8;
+        isOk = value.length >= 8;
         break;
       case 'confirmPassword':
-        isOk = registerParams[key] == registerParams.password;
+        isOk = registerParams[key] == registerParams.password && value.length >= 8;
         break;
       default:
         break;
     }
     //@ts-ignore
-    checkResult[key] = isOk;
+    result[key] = isOk;
   }
-  return checkResult;
+  return result;
 };
 const registerParams: RegisterParams = {
   phoneNumber: 0,
@@ -101,7 +111,6 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
         phoneNumber: registerParams.phoneNumber,
       });
       setVerificationButtonIsloading(false);
-      // TODO 按钮倒计时
       let count = 0;
       let timer = setInterval(() => {
         if (count < 60) {
@@ -163,17 +172,6 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
       <Icon {...props} name={secureTextEntry ? 'eye-off' : 'eye'} />
     </TouchableWithoutFeedback>
   );
-  const renderCaption = (props: any) => {
-    return (
-      <View style={{ flexDirection: 'row', alignItems: 'center', height: pxToDp(12) }}>
-        {ShowIcon({
-          color: props.isOk ? '#3DE27C' : '#FF5182',
-          name: props.isOk ? 'checkmark-outline' : 'alert-circle-outline',
-        })}
-        <Text style={{ color: '#FF5182', fontSize: pxToDp(11) }}>{!props.isOk ? props.rule : ''}</Text>
-      </View>
-    );
-  };
 
   const toggleSecureEntry = () => {
     setSecureTextEntry(!secureTextEntry);
