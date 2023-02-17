@@ -17,7 +17,7 @@ const WelcomeScreen = (props: Props) => {
     <View
       style={{
         // FIXME 去掉安全区颜色
-        backgroundColor: themeColor.yellow,
+        backgroundColor: themeColor.orange,
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
         paddingLeft: insets.left,
@@ -59,10 +59,6 @@ const WelcomeScreen = (props: Props) => {
   );
 };
 const style = StyleSheet.create({
-  safeArea: {
-    backgroundColor: 'red',
-    flex: 1,
-  },
   container: {
     backgroundColor: themeColor.orange,
     width: '100%',

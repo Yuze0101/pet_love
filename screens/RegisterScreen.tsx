@@ -7,11 +7,11 @@ import { Button, Text, Input, Icon, Spinner } from '@ui-kitten/components';
 
 import storage from '../utils/storage';
 import { RootStackScreenProps } from '../types';
-// import Colors from '../constants/Colors';
+import Colors from '../constants/Colors';
 import { pxToDp } from '../constants/Layout';
 import { login, register, getVerificationCode } from '../api';
 const locked = require('../assets/images/locked.png');
-// const { themeColor } = Colors;
+const { themeColor } = Colors;
 type RegisterParams = {
   phoneNumber: number;
   verificationCode: number;
@@ -282,7 +282,7 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
 
 const style = StyleSheet.create({
   container: {
-    // backgroundColor: themeColor.white,
+    backgroundColor: themeColor.white,
     flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
@@ -290,8 +290,8 @@ const style = StyleSheet.create({
   image: {
     width: pxToDp(64),
     height: pxToDp(80),
-    marginTop: pxToDp(20),
-    marginBottom: pxToDp(60),
+    // marginTop: pxToDp(20),
+    marginBottom: pxToDp(40),
   },
   button: {
     width: pxToDp(327),
