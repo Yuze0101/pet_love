@@ -3,7 +3,7 @@ import { View, Image, Platform, StyleSheet, KeyboardAvoidingView, TouchableWitho
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-root-toast';
 import { StatusBar } from 'expo-status-bar';
-import { Button, Text, Input, Icon } from '@ui-kitten/components';
+import { Button, Text, Input, Icon, Spinner } from '@ui-kitten/components';
 
 import storage from '../utils/storage';
 import { RootStackScreenProps } from '../types';
@@ -59,7 +59,6 @@ const validateRegisterParams = (registerParams: RegisterParams) => {
     //@ts-ignore
     checkResult[key] = isOk;
   }
-  Toast.show(JSON.stringify(checkResult));
   return checkResult;
 };
 const registerParams: RegisterParams = {
@@ -73,18 +72,47 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
 
   useEffect(() => {
     //@ts-ignore
-    setTitle(route?.params?.status == 'regist' ? '注册 & 登陆' : '重制密码 & 登陆');
+    setRegisterButtonText(route?.params?.status == 'regist' ? '注册 & 登陆' : '重制密码 & 登陆');
   }, []);
-  const [title, setTitle] = useState('');
-  const [checkResult, setCheckResult] = useState({});
+  const [registerButtonText, setRegisterButtonText] = useState('');
+  const [checkResult, setCheckResult] = useState({
+    phoneNumber: false,
+    verificationCode: false,
+    password: false,
+    confirmPassword: false,
+  });
+  const [verificationButtonText, setVerificationButtonText] = useState('获取验证码');
+  const [verificationButtonStatus, setVerificationButtonStatus] = useState(false);
+  const [verificationButtonIsloading, setVerificationButtonIsloading] = useState(false);
   const [secureTextEntry, setSecureTextEntry] = useState(true);
 
   const userGetVerificationCode = async () => {
+    // @ts-ignore
+    if (!checkResult.phoneNumber) {
+      Toast.show('请输入正确的手机号', { position: Toast.positions.CENTER });
+      return;
+    }
+    if (verificationButtonStatus) return;
+    setVerificationButtonStatus(true);
+    setVerificationButtonIsloading(true);
+
     try {
       const res = await getVerificationCode({
         phoneNumber: registerParams.phoneNumber,
       });
+      setVerificationButtonIsloading(false);
       // TODO 按钮倒计时
+      let count = 0;
+      let timer = setInterval(() => {
+        if (count < 60) {
+          count++;
+          setVerificationButtonText(String(60 - count));
+        } else {
+          setVerificationButtonText('获取验证码');
+          setVerificationButtonStatus(false);
+          clearInterval(timer);
+        }
+      }, 1000);
       Toast.show('res is : ' + JSON.stringify(res));
     } catch (error) {
       console.error('Err: ' + error);
@@ -92,8 +120,10 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
   };
   const userRegister = async () => {
     // @ts-ignore
-    if (!Object.keys(checkResult).every(result => checkResult[result] == true)) {
-      Toast.show('注册信息不合法，请修改');
+    if (Object.keys(checkResult).some(result => checkResult[result] != true)) {
+      Toast.show('注册信息不合法，请修改', {
+        position: Toast.positions.CENTER,
+      });
       return;
     }
     try {
@@ -174,7 +204,7 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
           setCheckResult(validateRegisterParams(registerParams));
         }}
       />
-      <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Input
           placeholder="验证码"
           placeholderTextColor={'#361D1E50'}
@@ -191,16 +221,21 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
           }}
         />
         <Button
+          disabled={verificationButtonStatus}
           status="info"
           size="large"
-          style={{ flex: 1, marginLeft: pxToDp(5) }}
+          style={{ flex: 1, marginLeft: pxToDp(5), marginTop: pxToDp(3) }}
           onPress={() => userGetVerificationCode()}
         >
-          {evaProps => (
-            <Text {...evaProps} style={style.buttonBrownText}>
-              获取验证码
-            </Text>
-          )}
+          {evaProps =>
+            verificationButtonIsloading ? (
+              <Spinner />
+            ) : (
+              <Text {...evaProps} style={verificationButtonStatus ? style.greyText : style.brownText}>
+                {verificationButtonText}
+              </Text>
+            )
+          }
         </Button>
       </View>
       <Input
@@ -238,7 +273,7 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
       <Button style={{ ...style.button, marginTop: pxToDp(32) }} onPress={() => userRegister()}>
         {evaProps => (
           <Text {...evaProps} style={style.font}>
-            {title}
+            {registerButtonText}
           </Text>
         )}
       </Button>
@@ -257,13 +292,8 @@ const style = StyleSheet.create({
   image: {
     width: pxToDp(64),
     height: pxToDp(80),
-    marginTop: pxToDp(53),
-    marginBottom: pxToDp(20),
-  },
-  input: {
-    fontSize: pxToDp(16),
-    color: '#3611d1e',
-    marginTop: pxToDp(16),
+    marginTop: pxToDp(20),
+    marginBottom: pxToDp(60),
   },
   button: {
     width: pxToDp(327),
@@ -275,5 +305,6 @@ const style = StyleSheet.create({
     fontWeight: 'bold',
     color: '#ffffff',
   },
-  buttonBrownText: { fontSize: pxToDp(12), color: '#F8BC3C', fontWeight: 'bold' },
+  brownText: { fontSize: pxToDp(12), color: '#F8BC3C', fontWeight: 'bold' },
+  greyText: { fontSize: pxToDp(12), color: '#666666', fontWeight: 'bold' },
 });
