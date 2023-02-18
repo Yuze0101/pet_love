@@ -17,7 +17,7 @@ import storage from '../utils/storage';
 import { RootStackScreenProps } from '../types';
 import Colors from '../constants/Colors';
 import { pxToDp } from '../constants/Layout';
-import { login, register, getVerificationCode } from '../api';
+import { login, register, getVerificationCode, resetPassword } from '../api';
 const locked = require('../assets/images/locked.png');
 const { themeColor } = Colors;
 type RegisterParams = {
@@ -90,7 +90,8 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
 
   useEffect(() => {
     //@ts-ignore
-    setRegisterButtonText(route?.params?.status == 'regist' ? '注册 & 登陆' : '重制密码 & 登陆');
+    // setRegisterButtonText(route?.params?.status == 'regist' ? '注册 & 登陆' : '重制密码 & 登陆');
+    setRegisterButtonText(route?.params?.status == 'regist' ? '登陆' : '登陆');
   }, []);
   const [registerButtonText, setRegisterButtonText] = useState('');
   const [checkResult, setCheckResult] = useState({
@@ -139,13 +140,31 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
   const userRegister = async () => {
     // @ts-ignore
     if (Object.keys(checkResult).some(result => checkResult[result] != true)) {
-      Toast.show('注册信息不合法，请修改', {
+      Toast.show('信息不合法，请修改', {
         position: Toast.positions.CENTER,
       });
       return;
     }
     try {
       const res: any = await register(registerParams);
+      console.log('res is : ' + JSON.stringify(res));
+      if (res.success) {
+        userLogin();
+      }
+    } catch (error) {
+      console.error('Err: ' + error);
+    }
+  };
+  const userResetPassword = async () => {
+    // @ts-ignore
+    if (Object.keys(checkResult).some(result => checkResult[result] != true)) {
+      Toast.show('信息不合法，请修改', {
+        position: Toast.positions.CENTER,
+      });
+      return;
+    }
+    try {
+      const res: any = await resetPassword(registerParams);
       console.log('res is : ' + JSON.stringify(res));
       if (res.success) {
         userLogin();
@@ -218,7 +237,7 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
               width: pxToDp(45),
               borderRadius: pxToDp(45),
             }}
-            onPress={()=> navigation.goBack()}
+            onPress={() => navigation.goBack()}
           />
         </View>
 
@@ -288,26 +307,36 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
           }}
         />
         {/* TODO 对键盘高度做自适应 */}
-        <KeyboardAvoidingView style={{width:'100%'}} behavior={Platform.OS === 'ios' ? 'position':'height'}>
-        <Input
-          placeholder="确认密码"
-          size={'large'}
-          placeholderTextColor={'#361D1E50'}
-          style={{ marginTop: pxToDp(16) }}
-          secureTextEntry={secureTextEntry}
-          // @ts-ignore
-          caption={() => renderCaption({ rule: '确认密码必须和新的密码一致', isOk: checkResult.confirmPassword })}
-          accessoryRight={renderIcon}
-          textContentType={'newPassword'}
-          returnKeyType={'done'}
-          onChangeText={string => {
-            registerParams.confirmPassword = string;
-            setCheckResult(validateRegisterParams(registerParams));
-          }}
-        />
+        <KeyboardAvoidingView style={{ width: '100%' }} behavior={Platform.OS === 'ios' ? 'position' : 'height'}>
+          <Input
+            placeholder="确认密码"
+            size={'large'}
+            placeholderTextColor={'#361D1E50'}
+            style={{ marginTop: pxToDp(16) }}
+            secureTextEntry={secureTextEntry}
+            // @ts-ignore
+            caption={() => renderCaption({ rule: '确认密码必须和新的密码一致', isOk: checkResult.confirmPassword })}
+            accessoryRight={renderIcon}
+            textContentType={'newPassword'}
+            returnKeyType={'done'}
+            onChangeText={string => {
+              registerParams.confirmPassword = string;
+              setCheckResult(validateRegisterParams(registerParams));
+            }}
+          />
         </KeyboardAvoidingView>
-      
-        <Button style={{ ...style.button, marginTop: pxToDp(32) }} onPress={() => userRegister()}>
+
+        <Button
+          style={{ ...style.button, marginTop: pxToDp(32) }}
+          onPress={() => {
+            // @ts-ignore
+            if (route?.params?.status == 'regist') {
+              userRegister();
+            } else {
+              userResetPassword();
+            }
+          }}
+        >
           {evaProps => (
             <Text {...evaProps} style={style.font}>
               {registerButtonText}
