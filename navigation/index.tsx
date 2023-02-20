@@ -131,6 +131,7 @@ function BottomTabNavigator() {
           name="TabFour"
           component={UserCenterScreen}
           options={{
+            headerShown: false,
             title: 'Tab Four',
             tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
           }}
