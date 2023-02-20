@@ -23,6 +23,7 @@ import LinkingConfiguration from './LinkingConfiguration';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import AnimalInfoScreen from '../screens/AnimalInfoScreen';
+import UserCenterScreen from '../screens/UserCenterScreen';
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
@@ -40,7 +41,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
   return (
-    <Stack.Navigator initialRouteName="Animal">
+    <Stack.Navigator initialRouteName="Root">
       <Stack.Screen name="Animal" component={AnimalInfoScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
@@ -128,9 +129,10 @@ function BottomTabNavigator() {
         />
         <BottomTab.Screen
           name="TabFour"
-          component={TabTwoScreen}
+          component={UserCenterScreen}
           options={{
-            title: 'Tab Two',
+            headerShown: false,
+            title: 'Tab Four',
             tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
           }}
         />
