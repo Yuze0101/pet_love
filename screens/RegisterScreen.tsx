@@ -17,7 +17,7 @@ import storage from '../utils/storage';
 import { RootStackScreenProps } from '../types';
 import Colors from '../constants/Colors';
 import { pxToDp } from '../constants/Layout';
-import { login, register, getVerificationCode, resetPassword } from '../api';
+import { login, signUp, getVerificationCode, resetPassword } from '../api';
 const locked = require('../assets/images/locked.png');
 const { themeColor } = Colors;
 type RegisterParams = {
@@ -146,7 +146,7 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
       return;
     }
     try {
-      const res: any = await register(registerParams);
+      const res: any = await signUp(registerParams);
       console.log('res is : ' + JSON.stringify(res));
       if (res.success) {
         userLogin();
