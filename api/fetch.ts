@@ -8,17 +8,30 @@ const headers = {
 
 type HttpsProps = {
   url: string;
-  params?: {};
+  params: {};
 };
 
 export const get = (props: HttpsProps) => {
   const paramsArray: string[] = [];
-  if (props.params) {
-    Object.keys(props.params).forEach(key => {
+  storage
+    .load({
+      key: 'token',
+    })
+    .then(value => {
+      console.log('Storage load token to get : ' + value);
+      // headers.Token = value;
       // @ts-ignore
-      if (key) paramsArray.push(key + '=' + props.params[key]);
+      props.params.token = value;
+    })
+    .catch(error => {
+      console.log('Err: ' + error);
     });
-  }
+
+  Object.keys(props.params).forEach(key => {
+    // @ts-ignore
+    if (key) paramsArray.push(key + '=' + props.params[key]);
+  });
+
   return new Promise((resolve, reject) => {
     fetch(baseUrl + props.url + '?' + paramsArray.join('&'), {
       method: 'GET',
@@ -39,8 +52,10 @@ export const post = (props: HttpsProps) => {
       key: 'token',
     })
     .then(value => {
-      console.log('Storage load token : ' + value);
+      console.log('Storage load token to post : ' + value);
       // headers.Token = value;
+      // @ts-ignore
+      props.params.token = value;
     })
     .catch(error => {
       console.log('Err: ' + error);

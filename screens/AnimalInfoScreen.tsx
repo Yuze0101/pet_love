@@ -118,6 +118,7 @@ export default function AnimalInfoScreen({ navigation }: RootStackScreenProps<'A
               height: pxToDp(80),
               backgroundColor: '#cccccc',
               borderRadius: pxToDp(80),
+              marginBottom: pxToDp(30),
             }}
           >
             <Image></Image>
@@ -161,6 +162,7 @@ export default function AnimalInfoScreen({ navigation }: RootStackScreenProps<'A
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
+
                 flex: 1,
               }}
               selectedIndex={selectedIndex}
@@ -201,7 +203,8 @@ export default function AnimalInfoScreen({ navigation }: RootStackScreenProps<'A
             justifyContent: 'space-between',
           }}
         >
-          <RenderCardList list={[{ type: 'cat' }, { type: 'dog' }, { type: 'other' }]} />
+          {/* FIXME 替换渲染 */}
+          <RenderCardList list={[{ type: 'cat', fill: '' }, { type: 'dog', fill: '' }, { type: 'other' }]} />
         </View>
       </View>
 
@@ -212,6 +215,7 @@ export default function AnimalInfoScreen({ navigation }: RootStackScreenProps<'A
 
 type CardType = {
   type: string;
+  fill: string;
 };
 const RenderCardList = (props: any) => {
   return props.list.map((item: CardType, index: number) => {
@@ -228,9 +232,9 @@ const RenderCardList = (props: any) => {
         >
           {item.type != 'other' ? (
             item.type == 'cat' ? (
-              <CatIcon fill={themeColor.orange} />
+              <CatIcon fill={item.fill} />
             ) : (
-              <DogIcon fill={'black'} />
+              <DogIcon fill={item.fill} />
             )
           ) : (
             <></>
