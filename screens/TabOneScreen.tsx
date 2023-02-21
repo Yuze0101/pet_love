@@ -2,7 +2,7 @@ import { useContext, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { Text, Layout } from '@ui-kitten/components';
 
-import { RootTabScreenProps } from '../types';
+import { RootTabScreenProps, ActioinType } from '../types';
 import { UserContext } from '../contexts/UserContext';
 
 export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'>) {
@@ -10,7 +10,7 @@ export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'
 
   useEffect(() => {
     if (state == null) {
-      dispatch({ type: 'GET_USER_INFO' });
+      dispatch({ type: ActioinType.getUserInfo });
     }
   }, []);
   return (

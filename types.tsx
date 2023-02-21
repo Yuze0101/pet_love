@@ -39,3 +39,11 @@ export type RootTabScreenProps<Screen extends keyof RootTabParamList> = Composit
   BottomTabScreenProps<RootTabParamList, Screen>,
   NativeStackScreenProps<RootStackParamList>
 >;
+
+export enum ActioinType {
+  getUserInfo = 'GET_USER_INFO',
+  getPetInfo = 'GET_PET_INFO',
+}
+export type Actions = {
+  type: ActioinType;
+};
