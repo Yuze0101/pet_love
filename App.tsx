@@ -31,7 +31,7 @@ export default function App() {
   const userValue = useMemo(() => [userState, userDispatch], [userState]);
   const petValue = useMemo(() => [petState, petDispatch], [petState]);
 
-  console.log('userState is ' + JSON.stringify(userValue));
+  // console.log('userState is ' + JSON.stringify(userValue));
 
   if (!isLoadingComplete) {
     return null;

@@ -4,7 +4,6 @@ import { Pet } from './PetContext';
 import { Actions, ActioinType } from '../types';
 
 export const reducer = async (state: any, action: Actions) => {
-  console.log('state : ' + JSON.stringify(state) + ' action : ' + JSON.stringify(action));
   switch (action.type) {
     case ActioinType.getUserInfo:
       const userInfo: User = await new Promise((resolve, reject) => {
