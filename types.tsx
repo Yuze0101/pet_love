@@ -20,7 +20,6 @@ export type RootStackParamList = {
   Welcome: undefined;
   Login: undefined;
   Register: undefined;
-  PetInfo: undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<
@@ -32,16 +31,23 @@ export type RootTabParamList = {
   TabOne: undefined;
   TabTwo: undefined;
   TabThree: undefined;
-  UserCenter: NavigatorScreenParams<UserCenterParamList> | undefined;
+  UserCenter: NativeStackScreenProps<UserCenterParamList>;
 };
 
-export type UserCenterParamList = {
-  PetInfo: undefined;
-};
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<
   BottomTabScreenProps<RootTabParamList, Screen>,
   NativeStackScreenProps<RootStackParamList>
+>;
+
+export type UserCenterParamList = {
+  Main:undefined;
+  PetInfo: undefined;
+};
+
+export type UserCenterScreenProps<Screen extends keyof UserCenterParamList> = NativeStackScreenProps<
+  UserCenterParamList,
+  Screen
 >;
 
 export enum ActioinType {

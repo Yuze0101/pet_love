@@ -23,8 +23,15 @@ const linking: LinkingOptions<RootStackParamList> = {
       Root: {
         path: 'root',
         screens: {
+          TabOne:{
+            screens:{
+              
+            }
+          },
           UserCenter: {
-            path: 'root/userCenter'
+            screens: {
+              
+            },
           },
         },
       },

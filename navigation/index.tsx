@@ -24,6 +24,7 @@ import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import PetInfoScreen from '../screens/PetInfoScreen';
 import UserCenterScreen from '../screens/UserCenterScreen';
+import UserCenterNavigator from './UserCenterNavigator';
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
@@ -42,7 +43,6 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 function RootNavigator() {
   return (
     <Stack.Navigator initialRouteName="Welcome">
-      <Stack.Screen name="PetInfo" component={PetInfoScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
@@ -128,8 +128,8 @@ function BottomTabNavigator() {
           }}
         />
         <BottomTab.Screen
-          name="UserCenter"
-          component={UserCenterScreen}
+          name='UserCenter'
+          component={UserCenterNavigator}
           options={{
             headerShown: false,
             title: 'Tab Four',
