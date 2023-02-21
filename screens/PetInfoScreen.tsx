@@ -18,9 +18,11 @@ import * as ImagePicker from 'expo-image-picker';
 
 import { pxToDp } from '../constants/Layout';
 import Colors from '../constants/Colors';
-import { RootStackScreenProps } from '../types';
+import { UserCenterScreenProps } from '../types';
 import CatIcon from '../components/CatIcon';
 import DogIcon from '../components/DogIcon';
+import { upload } from '../api';
+import { err } from 'react-native-svg/lib/typescript/xml';
 
 const { themeColor } = Colors;
 
@@ -45,7 +47,7 @@ const i18n: I18nConfig = {
 
 const localeDateService = new NativeDateService('cn', { i18n, startDayOfWeek: 1 });
 
-export default function AnimalInfoScreen({ navigation }: RootStackScreenProps<'PetInfo'>) {
+export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'PetInfo'>) {
   const insets = useSafeAreaInsets();
 
   const [date, setDate] = useState(new Date());
@@ -61,12 +63,27 @@ export default function AnimalInfoScreen({ navigation }: RootStackScreenProps<'P
       aspect: [4, 3],
       quality: 1,
     });
-
-    console.log('pickImage picked Result : ' + JSON.stringify(result));
-
     if (!result.canceled) {
-      //   setImage(result.assets[0].uri);
-      console.log('pickImage canceled Result : ' + JSON.stringify(result));
+      // ImagePicker saves the taken photo to disk and returns a local URI to it
+      const localUri = result.assets[0].uri;
+      const filename = localUri.split('/').pop();
+      const match = /\.(\w+)$/.exec(filename as string);
+      const type = match ? `image/${match[1]}` : `image`;
+      const formData = new FormData();
+      // @ts-ignore
+      formData.append('photo', { uri: localUri, name: filename, type });
+
+      // console.log(formData)
+
+      console.log(`{localUri : ${localUri} , filename : ${filename} , type : ${type}}`);
+
+      try {
+        const res = await upload({ file: formData });
+        console.log('upload res : ' + JSON.stringify(res));
+      } catch (error) {
+        console.error('Err : ' + error);
+      }
+    } else {
     }
   };
 
