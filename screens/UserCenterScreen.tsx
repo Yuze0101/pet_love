@@ -1,82 +1,173 @@
-import { StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, View, Image, TouchableWithoutFeedback } from 'react-native';
+import { useEffect, useState } from 'react';
 import { Text, Layout, Button, Input, Icon, Spinner } from '@ui-kitten/components';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RootTabScreenProps } from '../types';
 import { pxToDp } from '../constants/Layout';
 import Colors from '../constants/Colors';
+import { queryDetail } from '../api';
 const { themeColor } = Colors;
-
+interface UserInfo {
+  username: string;
+  portraitUrl: string;
+  token: string;
+  followCount: number;
+}
 export default function UserCenterScreen({ navigation }: RootTabScreenProps<'TabFour'>) {
   const insets = useSafeAreaInsets();
+  const [loading, setLoading] = useState(true);
+  const [haveUserInfo, setHaveUserInfo] = useState(false);
+  const [userInfo, setUserInfo] = useState({} as UserInfo);
+  const [havePets, setHavePets] = useState(false);
+  const [petInfoList, setPetInfoList] = useState([] as any);
+  const [currentIndex, setCurrentIndex] = useState(null as any);
+  const getUserInfo = async () => {
+    setLoading(true);
+    console.log('getUserInfo');
+    let res: any = await queryDetail({});
+    console.log(res);
+    if (res.success) {
+      let userInfo: any = res.data.userInfo;
+      let petInfoList: any = res.data.petInfoList;
+      if (userInfo == null) {
+        setHaveUserInfo(false);
+      } else {
+        setHaveUserInfo(true);
+        setUserInfo(userInfo);
+      }
+      if (petInfoList == null) {
+        setHavePets(false);
+      } else {
+        setHavePets(true);
+        if (petInfoList.length > 0) {
+          petInfoList = petInfoList.map((item: any, index: number) => {
+            if (index === 0) {
+              item.active = true;
+            } else {
+              item.active = false;
+            }
+            return item;
+          });
+        }
+        setCurrentIndex(0);
+        setPetInfoList(petInfoList);
+      }
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    getUserInfo();
+  }, []);
   return (
     <Layout
       style={{
         ...styles.container,
-        paddingTop: insets.top,
+        paddingTop: loading ? pxToDp(100) : insets.top,
         paddingBottom: insets.bottom,
       }}
     >
-      <View style={styles.topInfo}>
-        <View style={styles.topInfoLeft}>
-          {false ? (
+      {loading ? (
+        <>
+          <Spinner />
+        </>
+      ) : (
+        <>
+          <View style={styles.topInfo}>
+            <View style={styles.topInfoLeft}>
+              <Image resizeMode="cover" source={{ uri: userInfo.portraitUrl }} style={styles.topInfoLeftImg} />
+              <Text style={styles.topInfoLeftName}>{userInfo.username}</Text>
+            </View>
+            <View style={styles.topInfoRight}>
+              {petInfoList.length > 0 ? <Button>{'新增宠物'}</Button> : null}
+              <TouchableWithoutFeedback onPress={() => {}}>
+                <Image source={require('../assets/images/setting.png')} style={styles.topInfoRightIcon} />
+              </TouchableWithoutFeedback>
+            </View>
+          </View>
+          {havePets ? (
             <>
-              <Image style={styles.topInfoLeftImg} />
+              <View style={styles.petList}>
+                {petInfoList.map((item: any, index: number) => {
+                  return (
+                    <TouchableWithoutFeedback
+                      onPress={() => {
+                        let newPetInfoList: any = petInfoList;
+                        newPetInfoList[currentIndex].active = false;
+                        newPetInfoList[index].active = true;
+                        setCurrentIndex(index);
+                        setPetInfoList(newPetInfoList);
+                      }}
+                    >
+                      <Image
+                        source={{ uri: item.portraitUrl }}
+                        style={
+                          item.active
+                            ? { ...styles.petListItemSelected, ...styles.petListItem }
+                            : { ...styles.petListItem }
+                        }
+                      />
+                    </TouchableWithoutFeedback>
+                  );
+                })}
+              </View>
+              <View style={styles.petInfo}>
+                <View style={styles.petInfoLeft}>
+                  <Text style={styles.petName}>{petInfoList[currentIndex].name}</Text>
+                  <Text style={styles.petDesc}>{petInfoList[currentIndex].desc}</Text>
+                </View>
+                <Image source={require('../assets/images/edit.png')} />
+              </View>
+              <View style={styles.petInfo}>
+                <View style={styles.petInfoItem}>
+                  <Text style={styles.petInfoItemTitle}>{'年龄'}</Text>
+                  <Text style={styles.petInfoItemDesc}>{petInfoList[currentIndex].age}</Text>
+                </View>
+                <View style={styles.petInfoItem}>
+                  <Text style={styles.petInfoItemTitle}>{'性别'}</Text>
+                  <Text style={styles.petInfoItemDesc}>{petInfoList[currentIndex].gender == 'MALE' ? '公' : '母'}</Text>
+                </View>
+                <View style={styles.petInfoItem}>
+                  <Text style={styles.petInfoItemTitle}>{'体重(kg)'}</Text>
+                  <Text style={styles.petInfoItemDesc}>{petInfoList[currentIndex].weight}</Text>
+                </View>
+              </View>
             </>
           ) : (
             <>
-              <View style={styles.topInfoLeftImg}></View>
-            </>
+            <Button style={{
+                marginTop: pxToDp(100),
+                marginBottom: pxToDp(100),
+                width: pxToDp(300),
+                height: pxToDp(50),
+
+            }}>{"新增宠物"}</Button></>
           )}
-          <Text style={styles.topInfoLeftName}>{'主人名称'}</Text>
-        </View>
-        <View style={styles.topInfoRight}>
-          <Button>{'新增宠物'}</Button>
-          <Image source={require('../assets/images/setting.png')} style={styles.topInfoRightIcon} />
-        </View>
-      </View>
-      <View style={styles.petList}>
-        <Image style={true ? { ...styles.petListItemSelected, ...styles.petListItem } : { ...styles.petListItem }} />
-        <Image style={false ? { ...styles.petListItemSelected, ...styles.petListItem } : { ...styles.petListItem }} />
-      </View>
-      <View style={styles.petInfo}>
-        <View style={styles.petInfoLeft}>
-          <Text style={styles.petName}>{'宠物名称'}</Text>
-          <Text style={styles.petDesc}>{'爱好/食物'}</Text>
-        </View>
-        <Image source={require('../assets/images/edit.png')} />
-      </View>
-      <View style={styles.petInfo}>
-        <View style={styles.petInfoItem}>
-          <Text style={styles.petInfoItemTitle}>{'年龄'}</Text>
-          <Text style={styles.petInfoItemDesc}>{'1'}</Text>
-        </View>
-        <View style={styles.petInfoItem}>
-          <Text style={styles.petInfoItemTitle}>{'性别'}</Text>
-          <Text style={styles.petInfoItemDesc}>{'公'}</Text>
-        </View>
-        <View style={styles.petInfoItem}>
-          <Text style={styles.petInfoItemTitle}>{'体重(kg)'}</Text>
-          <Text style={styles.petInfoItemDesc}>{'3.6'}</Text>
-        </View>
-      </View>
-      <View style={styles.petData}>
-        <View style={styles.petDataItem}>
-          <Text style={styles.petDataItemTitle}>{'65'}</Text>
-          <Text style={styles.petDataItemDesc}>{'动态'}</Text>
-        </View>
-        <View style={styles.petDataItem}>
-          <Text style={styles.petDataItemTitle}>{'165'}</Text>
-          <Text style={styles.petDataItemDesc}>{'关注'}</Text>
-        </View>
-        <View style={styles.petDataItem}>
-          <Text style={styles.petDataItemTitle}>{'1K'}</Text>
-          <Text style={styles.petDataItemDesc}>{'粉丝'}</Text>
-        </View>
-      </View>
-      <Text style={styles.cardListTitle}>{'动态'}</Text>
-      <View style={styles.cardList}>
-        <View style={styles.cardListItem}></View>
-      </View>
+          <View style={styles.petData}>
+            <View style={styles.petDataItem}>
+              <Text style={styles.petDataItemTitle}>{havePets ? petInfoList[currentIndex].cardCount : 0}</Text>
+              <Text style={styles.petDataItemDesc}>{'动态'}</Text>
+            </View>
+            <View style={styles.petDataItem}>
+              <Text style={styles.petDataItemTitle}>{havePets ? petInfoList[currentIndex].fansCount : 0}</Text>
+              <Text style={styles.petDataItemDesc}>{'关注'}</Text>
+            </View>
+            <View style={styles.petDataItem}>
+              <Text style={styles.petDataItemTitle}>{havePets ? petInfoList[currentIndex].fansCount : 0}</Text>
+              <Text style={styles.petDataItemDesc}>{'粉丝'}</Text>
+            </View>
+          </View>
+          {havePets ? (
+            <>
+              <Text style={styles.cardListTitle}>{'动态'}</Text>
+              <View style={styles.cardList}>
+                <View style={styles.cardListItem}></View>
+              </View>
+            </>
+          ) : (
+            <></>
+          )}
+        </>
+      )}
     </Layout>
   );
 }
