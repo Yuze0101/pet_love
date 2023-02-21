@@ -16,9 +16,17 @@ const linking: LinkingOptions<RootStackParamList> = {
       Login: 'login',
       Register: {
         path: 'register/:status',
-        parse:{
-          status: (status)=> status
-        }
+        parse: {
+          status: status => status,
+        },
+      },
+      Root: {
+        path: 'root',
+        screens: {
+          UserCenter: {
+            path: 'root/userCenter'
+          },
+        },
       },
       // Root: {
       //   screens: {

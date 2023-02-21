@@ -13,7 +13,7 @@ interface UserInfo {
   token: string;
   followCount: number;
 }
-export default function UserCenterScreen({ navigation }: RootTabScreenProps<'TabFour'>) {
+export default function UserCenterScreen({ navigation }: RootTabScreenProps<'UserCenter'>) {
   const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(true);
   const [haveUserInfo, setHaveUserInfo] = useState(false);

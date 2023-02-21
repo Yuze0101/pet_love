@@ -128,7 +128,7 @@ function BottomTabNavigator() {
           }}
         />
         <BottomTab.Screen
-          name="TabFour"
+          name="UserCenter"
           component={UserCenterScreen}
           options={{
             headerShown: false,

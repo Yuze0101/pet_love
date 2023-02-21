@@ -19,7 +19,7 @@ export type RootStackParamList = {
   NotFound: undefined;
   Welcome: undefined;
   Login: undefined;
-  Register: NavigatorScreenParams<RootTabParamList> | undefined;
+  Register: undefined;
   PetInfo: undefined;
 };
 
@@ -32,7 +32,11 @@ export type RootTabParamList = {
   TabOne: undefined;
   TabTwo: undefined;
   TabThree: undefined;
-  TabFour: undefined;
+  UserCenter: NavigatorScreenParams<UserCenterParamList> | undefined;
+};
+
+export type UserCenterParamList = {
+  PetInfo: undefined;
 };
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<
