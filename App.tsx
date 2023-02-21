@@ -1,3 +1,4 @@
+import { useReducer } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { RootSiblingParent } from 'react-native-root-siblings';
@@ -11,9 +12,16 @@ import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
 import Navigation from './navigation';
 
+import { reducer } from './contexts/reducer';
+import { UserContext, initialState as userInitialState } from './contexts/UserContext';
+import { PetContext, initialState as petInitialState } from './contexts/PetContext';
+
 export default function App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
+
+  const [userState, userDispatch] = useReducer(reducer, userInitialState);
+  const [petState, petDispatch] = useReducer(reducer, petInitialState);
 
   if (!isLoadingComplete) {
     return null;
@@ -23,7 +31,11 @@ export default function App() {
         <IconRegistry icons={EvaIconsPack} />
         <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
           <SafeAreaProvider>
-            <Navigation colorScheme={colorScheme} />
+            <UserContext.Provider value={[userState, userDispatch]}>
+              <PetContext.Provider value={[petState, petDispatch]}>
+                <Navigation colorScheme={colorScheme} />
+              </PetContext.Provider>
+            </UserContext.Provider>
             <StatusBar />
           </SafeAreaProvider>
         </ApplicationProvider>

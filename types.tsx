@@ -20,7 +20,7 @@ export type RootStackParamList = {
   Welcome: undefined;
   Login: undefined;
   Register: NavigatorScreenParams<RootTabParamList> | undefined;
-  Animal: undefined;
+  PetInfo: undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<

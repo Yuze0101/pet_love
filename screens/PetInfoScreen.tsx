@@ -45,7 +45,7 @@ const i18n: I18nConfig = {
 
 const localeDateService = new NativeDateService('cn', { i18n, startDayOfWeek: 1 });
 
-export default function AnimalInfoScreen({ navigation }: RootStackScreenProps<'Animal'>) {
+export default function AnimalInfoScreen({ navigation }: RootStackScreenProps<'PetInfo'>) {
   const insets = useSafeAreaInsets();
 
   const [date, setDate] = useState(new Date());
@@ -150,6 +150,7 @@ export default function AnimalInfoScreen({ navigation }: RootStackScreenProps<'A
               //   caption={}
               label="体重kg"
               size={'large'}
+              keyboardType={'number-pad'}
               style={{ flex: 1, marginRight: pxToDp(20) }}
               textContentType={'name'}
               onChangeText={number => {}}
@@ -222,7 +223,12 @@ const RenderCardList = (props: any) => {
   const [choosedIndex, setChoosedIndex] = useState(0);
   return props.list.map((item: CardType, index: number) => {
     return (
-      <Card status={choosedIndex == index ? 'primary' : 'basic'} onPress={() => setChoosedIndex(index)} key={index} style={{ width: pxToDp(100), height: pxToDp(70) }}>
+      <Card
+        status={choosedIndex == index ? 'primary' : 'basic'}
+        onPress={() => setChoosedIndex(index)}
+        key={index}
+        style={{ width: pxToDp(100), height: pxToDp(70) }}
+      >
         <View
           style={{
             height: '100%',
