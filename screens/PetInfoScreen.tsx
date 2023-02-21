@@ -21,8 +21,7 @@ import Colors from '../constants/Colors';
 import { UserCenterScreenProps } from '../types';
 import CatIcon from '../components/CatIcon';
 import DogIcon from '../components/DogIcon';
-import { upload } from '../api';
-import { err } from 'react-native-svg/lib/typescript/xml';
+import { upload, createPet } from '../api';
 
 const { themeColor } = Colors;
 
@@ -44,15 +43,44 @@ const i18n: I18nConfig = {
     long: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
   },
 };
-
 const localeDateService = new NativeDateService('cn', { i18n, startDayOfWeek: 1 });
 
+type CreatePetParam = {
+  name: string;
+  portraitUrl: string;
+  age: number;
+  birthday: Date;
+  gender: 'MALE' | 'FEMALE';
+  type: 'CAT' | 'DOG' | 'OTHER';
+  weight: string;
+  desc: string;
+};
 export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'PetInfo'>) {
   const insets = useSafeAreaInsets();
 
   const [date, setDate] = useState(new Date());
   const [multilineInputText, setMultilineInputText] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const createPetParam: CreatePetParam = {
+    name: '',
+    portraitUrl: '',
+    age: 0,
+    birthday: new Date(2000, 1, 1),
+    gender: 'FEMALE',
+    type: 'OTHER',
+    weight: '0' + 'kg',
+    desc: '',
+  };
+
+  const userCreatePet = async () => {
+    try {
+      const res = await createPet(createPetParam);
+      console.log(JSON.stringify(res));
+    } catch (error) {
+      console.error('Err : ' + error);
+    }
+  };
 
   const pickImage = async () => {
     console.log('clicked pickImage');
@@ -148,7 +176,7 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
             label="名称"
             size={'large'}
             textContentType={'name'}
-            onChangeText={number => {}}
+            onChangeText={name => (createPetParam.name = name)}
           />
           <Datepicker
             style={{ width: '100%' }}
@@ -158,7 +186,10 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
             size={'large'}
             label="生日"
             date={date}
-            onSelect={nextDate => setDate(nextDate)}
+            onSelect={nextDate => {
+              setDate(nextDate);
+              createPetParam.birthday = nextDate;
+            }}
             accessoryRight={CalendarIcon}
           />
           <View style={{ width: '100%', flexDirection: 'row' }}>
@@ -170,7 +201,7 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
               keyboardType={'number-pad'}
               style={{ flex: 1, marginRight: pxToDp(20) }}
               textContentType={'name'}
-              onChangeText={number => {}}
+              onChangeText={number => (createPetParam.weight = String(number) + 'kg')}
             />
             <View style={{ flex: 1 }}>
               <Text category="label" appearance="hint">
@@ -184,7 +215,10 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
                   flex: 1,
                 }}
                 selectedIndex={selectedIndex}
-                onChange={index => setSelectedIndex(index)}
+                onChange={index => {
+                  setSelectedIndex(index);
+                  createPetParam.gender = index == 0 ? 'MALE' : 'FEMALE';
+                }}
               >
                 <Radio style={{ flex: 1 }}>公</Radio>
                 <Radio style={{ flex: 1 }}>母</Radio>
@@ -209,6 +243,7 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
             onChangeText={text => {
               if (text.length <= 200) {
                 setMultilineInputText(text);
+                createPetParam.desc = text;
               }
             }}
           />
@@ -221,9 +256,12 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
               justifyContent: 'space-between',
             }}
           >
-            {/* FIXME 替换渲染 */}
+            {/* TODO 替换渲染 */}
             <RenderCardList list={[{ type: 'cat', fill: '' }, { type: 'dog', fill: '' }, { type: 'other' }]} />
           </View>
+          <Button style={{ width: '90%', marginTop: pxToDp(25) }} onPress={() => userCreatePet()}>
+            完成
+          </Button>
         </View>
 
         <StatusBar style={'auto'} />
@@ -261,9 +299,7 @@ const RenderCardList = (props: any) => {
             ) : (
               <DogIcon fill={choosedIndex == index ? themeColor.orange : ''} />
             )
-          ) : (
-            <></>
-          )}
+          ) : null}
           <Text style={{ marginLeft: pxToDp(5) }}>
             {item.type != 'other' ? (item.type == 'cat' ? '猫' : '狗') : '其他'}
           </Text>

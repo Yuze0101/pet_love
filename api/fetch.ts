@@ -46,7 +46,7 @@ export const get = (props: HttpsProps) => {
       });
   });
 };
-export const post = (props: HttpsProps) => {
+export const post = (props: HttpsProps, customContentType?: string) => {
   storage
     .load({
       key: 'userInfo',
@@ -60,6 +60,9 @@ export const post = (props: HttpsProps) => {
     .catch(error => {
       console.log('Err: ' + error);
     });
+  if (customContentType) {
+    headers['Content-Type'] = customContentType;
+  }
   return new Promise((resolve, reject) => {
     fetch(baseUrl + props.url, {
       method: 'POST',

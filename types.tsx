@@ -34,14 +34,13 @@ export type RootTabParamList = {
   UserCenter: NativeStackScreenProps<UserCenterParamList>;
 };
 
-
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<
   BottomTabScreenProps<RootTabParamList, Screen>,
   NativeStackScreenProps<RootStackParamList>
 >;
 
 export type UserCenterParamList = {
-  Main:undefined;
+  Main: undefined;
   PetInfo: undefined;
 };
 
@@ -56,4 +55,22 @@ export enum ActioinType {
 }
 export type Actions = {
   type: ActioinType;
+};
+export type Pet = {
+  id?: number;
+  name: string;
+  portraitUrl: string;
+  age: number;
+  birthday: Date;
+  gender: 'MALE' | 'FEMALE';
+  type: 'CAT' | 'DOG' | 'OTHER';
+  weight: string;
+  desc: string;
+  cardCount: number;
+  fansCount: number;
+};
+export type User = {
+  username: string;
+  portraitUrl: string;
+  follow_count: number;
 };
