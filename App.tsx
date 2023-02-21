@@ -11,6 +11,8 @@ import { IconRegistry } from '@ui-kitten/components';
 import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
 import { useAsyncReducer } from './hooks/useAsyncReducer';
+// TODO 可以做弹通知回到app刷新app信息
+// import { useAppState } from './hooks/useAppState';
 import Navigation from './navigation';
 
 import { reducer } from './contexts/reducer';
@@ -21,6 +23,8 @@ export default function App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
 
+  // useAppState();
+
   const [userState, userDispatch] = useAsyncReducer(reducer, userInitialState);
   const [petState, petDispatch] = useAsyncReducer(reducer, petInitialState);
 
@@ -28,7 +32,7 @@ export default function App() {
   const petValue = useMemo(() => [petState, petDispatch], [petState]);
 
   console.log('userState is ' + JSON.stringify(userValue));
-  
+
   if (!isLoadingComplete) {
     return null;
   } else {
