@@ -13,5 +13,5 @@ export type Pet = {
   cardCount: number;
   fansCount: number;
 };
-export const initialState: any = [];
+export const initialState: any = null;
 export const PetContext = createContext(initialState);

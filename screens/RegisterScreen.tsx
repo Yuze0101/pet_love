@@ -184,9 +184,13 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
       });
       console.log('login res : ' + JSON.stringify(res));
       if (res.success) {
-        storage.save({
-          key: 'token',
-          data: res.data?.token,
+        await storage.save({
+          key: 'userInfo',
+          data: {
+            username: res.data?.username,
+            portraitUrl: res.data.portraitUrl,
+            token: res.data?.token,
+          },
         });
         navigation.replace('Root');
       }

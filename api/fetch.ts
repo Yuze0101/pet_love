@@ -15,13 +15,13 @@ export const get = (props: HttpsProps) => {
   const paramsArray: string[] = [];
   storage
     .load({
-      key: 'token',
+      key: 'userInfo',
     })
     .then(value => {
-      console.log('Storage load token to get : ' + value);
+      console.log('Storage load token to get : ' + value.token);
       // headers.Token = value;
       // @ts-ignore
-      props.params.token = value;
+      props.params.token = value.token;
     })
     .catch(error => {
       console.log('Err: ' + error);
@@ -49,13 +49,13 @@ export const get = (props: HttpsProps) => {
 export const post = (props: HttpsProps) => {
   storage
     .load({
-      key: 'token',
+      key: 'userInfo',
     })
     .then(value => {
-      console.log('Storage load token to post : ' + value);
+      console.log('Storage load token to post : ' + value.token);
       // headers.Token = value;
       // @ts-ignore
-      props.params.token = value;
+      props.params.token = value.token;
     })
     .catch(error => {
       console.log('Err: ' + error);
