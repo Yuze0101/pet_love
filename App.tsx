@@ -1,3 +1,4 @@
+import { useReducer, useMemo, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { RootSiblingParent } from 'react-native-root-siblings';
@@ -9,12 +10,25 @@ import { IconRegistry } from '@ui-kitten/components';
 
 import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
+import { useAsyncReducer } from './hooks/useAsyncReducer';
 import Navigation from './navigation';
+
+import { reducer } from './contexts/reducer';
+import { UserContext, initialState as userInitialState } from './contexts/UserContext';
+import { PetContext, initialState as petInitialState } from './contexts/PetContext';
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
 
+  const [userState, userDispatch] = useAsyncReducer(reducer, userInitialState);
+  const [petState, petDispatch] = useAsyncReducer(reducer, petInitialState);
+
+  const userValue = useMemo(() => [userState, userDispatch], [userState]);
+  const petValue = useMemo(() => [petState, petDispatch], [petState]);
+
+  console.log('userState is ' + JSON.stringify(userValue));
+  
   if (!isLoadingComplete) {
     return null;
   } else {
@@ -23,7 +37,11 @@ export default function App() {
         <IconRegistry icons={EvaIconsPack} />
         <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
           <SafeAreaProvider>
-            <Navigation colorScheme={colorScheme} />
+            <UserContext.Provider value={userValue}>
+              <PetContext.Provider value={petValue}>
+                <Navigation colorScheme={colorScheme} />
+              </PetContext.Provider>
+            </UserContext.Provider>
             <StatusBar />
           </SafeAreaProvider>
         </ApplicationProvider>

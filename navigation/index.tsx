@@ -22,7 +22,7 @@ import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../typ
 import LinkingConfiguration from './LinkingConfiguration';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
-import AnimalInfoScreen from '../screens/AnimalInfoScreen';
+import PetInfoScreen from '../screens/PetInfoScreen';
 import UserCenterScreen from '../screens/UserCenterScreen';
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
@@ -41,8 +41,8 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
   return (
-    <Stack.Navigator initialRouteName="Root">
-      <Stack.Screen name="Animal" component={AnimalInfoScreen} options={{ headerShown: false }} />
+    <Stack.Navigator initialRouteName="Welcome">
+      <Stack.Screen name="PetInfo" component={PetInfoScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
