@@ -155,8 +155,6 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
             flex: 1,
             alignItems: 'center',
             justifyContent: 'space-between',
-            borderWidth: 1,
-            borderColor: 'red',
           }}
         >
           <TouchableWithoutFeedback onPress={() => pickImage()}>
@@ -247,14 +245,14 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
             style={{ flex: 1, minHeight: pxToDp(64), maxHeight: pxToDp(64) }}
             caption={props => (
               <Text category="label" appearance="hint">
-                {multilineInputText.length}/200字
+                {multilineInputText.length}/30字
               </Text>
             )}
             textStyle={{ overflow: 'scroll' }}
             textContentType={'name'}
             value={multilineInputText}
             onChangeText={text => {
-              if (text.length <= 200) {
+              if (text.length <= 30) {
                 setMultilineInputText(text);
                 createPetParam.desc = text;
               }
