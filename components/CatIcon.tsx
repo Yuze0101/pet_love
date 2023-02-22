@@ -3,7 +3,7 @@ import Svg, { SvgProps, G, Path } from 'react-native-svg';
 /* SVGR has dropped some elements not supported by react-native-svg: title */
 
 const CatIcon = (props: SvgProps) => (
-  <Svg {...props} width={35} height={39}>
+  <Svg  width={35} height={39}>
     <G fill={props.fill ? props.fill : 'black'} fillRule="evenodd">
       <Path d="M20.203 14.836c.354 0 .64-.302.64-.674v-1.317c0-.373-.286-.674-.64-.674-.354 0-.64.301-.64.674v1.317c0 .372.286.674.64.674Z" />
       <Path d="M19.471 16.168h1.463c.304 0 .55-.298.55-.666 0-.368-.246-.666-.55-.666h-1.463c-.303 0-.55.298-.55.666 0 .368.247.666.55.666ZM9.31 14.836c.354 0 .641-.302.641-.674v-1.317c0-.373-.287-.674-.64-.674-.355 0-.641.301-.641.674v1.317c0 .372.286.674.64.674Z" />

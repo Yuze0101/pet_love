@@ -89,24 +89,23 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 1,
+      quality: 0.2,
     });
     if (!result.canceled) {
       // ImagePicker saves the taken photo to disk and returns a local URI to it
+      console.log(JSON.stringify(result))
+
       const localUri = result.assets[0].uri;
       const filename = localUri.split('/').pop();
       const match = /\.(\w+)$/.exec(filename as string);
       const type = match ? `image/${match[1]}` : `image`;
       const formData = new FormData();
       // @ts-ignore
-      formData.append('photo', { uri: localUri, name: filename, type });
-
-      // console.log(formData)
-
+      formData.append('file', { uri: localUri, name: filename, type });
       console.log(`{localUri : ${localUri} , filename : ${filename} , type : ${type}}`);
 
       try {
-        const res = await upload({ file: formData });
+        const res = await upload(formData);
         console.log('upload res : ' + JSON.stringify(res));
       } catch (error) {
         console.error('Err : ' + error);
