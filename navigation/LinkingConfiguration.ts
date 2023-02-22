@@ -13,6 +13,7 @@ const linking: LinkingOptions<RootStackParamList> = {
   prefixes: [Linking.createURL('/')],
   config: {
     screens: {
+      Welcome: 'welcome',
       Login: 'login',
       Register: {
         path: 'register/:status',

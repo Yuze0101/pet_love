@@ -1,4 +1,4 @@
-import { StyleSheet, View, Image, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, Image, TouchableWithoutFeedback } from 'react-native';
 import { useEffect, useState } from 'react';
 import { Text, Layout, Button, Input, Icon, Spinner } from '@ui-kitten/components';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -6,6 +6,7 @@ import { UserCenterScreenProps } from '../types';
 import { pxToDp } from '../constants/Layout';
 import Colors from '../constants/Colors';
 import { queryDetail } from '../api';
+import storage from '../utils/storage';
 const { themeColor } = Colors;
 interface UserInfo {
   username: string;
@@ -34,11 +35,19 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
       } else {
         setHaveUserInfo(true);
         setUserInfo(userInfo);
+        await storage.save({
+          key: 'userData',
+          data: userInfo,
+        });
       }
       if (petInfoList == null) {
         setHavePets(false);
       } else {
         setHavePets(true);
+        await storage.save({
+          key: 'petData',
+          data: petInfoList,
+        });
         if (petInfoList.length > 0) {
           petInfoList = petInfoList.map((item: any, index: number) => {
             if (index === 0) {
@@ -72,21 +81,21 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
         </>
       ) : (
         <>
-          <View style={styles.topInfo}>
-            <View style={styles.topInfoLeft}>
+          <Layout style={styles.topInfo}>
+            <Layout style={styles.topInfoLeft}>
               <Image resizeMode="cover" source={{ uri: userInfo.portraitUrl }} style={styles.topInfoLeftImg} />
               <Text style={styles.topInfoLeftName}>{userInfo.username}</Text>
-            </View>
-            <View style={styles.topInfoRight}>
+            </Layout>
+            <Layout style={styles.topInfoRight}>
               {petInfoList.length > 0 ? <Button>{'新增宠物'}</Button> : null}
-              <TouchableWithoutFeedback onPress={() => {}}>
+              <TouchableWithoutFeedback onPress={()=> navigation.navigate('Setting')}>
                 <Image source={require('../assets/images/setting.png')} style={styles.topInfoRightIcon} />
               </TouchableWithoutFeedback>
-            </View>
-          </View>
+            </Layout>
+          </Layout>
           {havePets ? (
             <>
-              <View style={styles.petList}>
+              <Layout style={styles.petList}>
                 {petInfoList.map((item: any, index: number) => {
                   return (
                     <TouchableWithoutFeedback
@@ -109,28 +118,28 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
                     </TouchableWithoutFeedback>
                   );
                 })}
-              </View>
-              <View style={styles.petInfo}>
-                <View style={styles.petInfoLeft}>
+              </Layout>
+              <Layout style={styles.petInfo}>
+                <Layout style={styles.petInfoLeft}>
                   <Text style={styles.petName}>{petInfoList[currentIndex].name}</Text>
                   <Text style={styles.petDesc}>{petInfoList[currentIndex].desc}</Text>
-                </View>
+                </Layout>
                 <Image source={require('../assets/images/edit.png')} />
-              </View>
-              <View style={styles.petInfo}>
-                <View style={styles.petInfoItem}>
+              </Layout>
+              <Layout style={styles.petInfo}>
+                <Layout style={styles.petInfoItem}>
                   <Text style={styles.petInfoItemTitle}>{'年龄'}</Text>
                   <Text style={styles.petInfoItemDesc}>{petInfoList[currentIndex].age}</Text>
-                </View>
-                <View style={styles.petInfoItem}>
+                </Layout>
+                <Layout style={styles.petInfoItem}>
                   <Text style={styles.petInfoItemTitle}>{'性别'}</Text>
                   <Text style={styles.petInfoItemDesc}>{petInfoList[currentIndex].gender == 'MALE' ? '公' : '母'}</Text>
-                </View>
-                <View style={styles.petInfoItem}>
+                </Layout>
+                <Layout style={styles.petInfoItem}>
                   <Text style={styles.petInfoItemTitle}>{'体重(kg)'}</Text>
                   <Text style={styles.petInfoItemDesc}>{petInfoList[currentIndex].weight}</Text>
-                </View>
-              </View>
+                </Layout>
+              </Layout>
             </>
           ) : (
             <>
@@ -142,26 +151,26 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
 
             }} onPress={()=> navigation.navigate('PetInfo')}>{"新增宠物"}</Button></>
           )}
-          <View style={styles.petData}>
-            <View style={styles.petDataItem}>
+          <Layout style={styles.petData}>
+            <Layout style={styles.petDataItem}>
               <Text style={styles.petDataItemTitle}>{havePets ? petInfoList[currentIndex].cardCount : 0}</Text>
               <Text style={styles.petDataItemDesc}>{'动态'}</Text>
-            </View>
-            <View style={styles.petDataItem}>
+            </Layout>
+            <Layout style={styles.petDataItem}>
               <Text style={styles.petDataItemTitle}>{havePets ? petInfoList[currentIndex].fansCount : 0}</Text>
               <Text style={styles.petDataItemDesc}>{'关注'}</Text>
-            </View>
-            <View style={styles.petDataItem}>
+            </Layout>
+            <Layout style={styles.petDataItem}>
               <Text style={styles.petDataItemTitle}>{havePets ? petInfoList[currentIndex].fansCount : 0}</Text>
               <Text style={styles.petDataItemDesc}>{'粉丝'}</Text>
-            </View>
-          </View>
+            </Layout>
+          </Layout>
           {havePets ? (
             <>
               <Text style={styles.cardListTitle}>{'动态'}</Text>
-              <View style={styles.cardList}>
-                <View style={styles.cardListItem}></View>
-              </View>
+              <Layout style={styles.cardList}>
+                <Layout style={styles.cardListItem}></Layout>
+              </Layout>
             </>
           ) : (
             <></>
