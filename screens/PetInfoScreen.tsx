@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
   Input,
   Button,
@@ -62,6 +62,10 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
   const [multilineInputText, setMultilineInputText] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
 
+  const nameRef = useRef(null);
+  const weightRef = useRef(null);
+  const descRef = useRef(null);
+
   const createPetParam: CreatePetParam = {
     name: '',
     portraitUrl: '',
@@ -93,7 +97,7 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
     });
     if (!result.canceled) {
       // ImagePicker saves the taken photo to disk and returns a local URI to it
-      console.log(JSON.stringify(result))
+      console.log(JSON.stringify(result));
 
       const localUri = result.assets[0].uri;
       const filename = localUri.split('/').pop();
@@ -118,8 +122,6 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View
         style={{
-          borderWidth: 1,
-          borderColor: 'red',
           flex: 1,
           paddingTop: insets.top,
           paddingBottom: insets.bottom,
@@ -152,8 +154,9 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
           style={{
             flex: 1,
             alignItems: 'center',
-            borderColor: 'red',
+            justifyContent: 'space-between',
             borderWidth: 1,
+            borderColor: 'red',
           }}
         >
           <TouchableWithoutFeedback onPress={() => pickImage()}>
@@ -174,6 +177,7 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
             //   caption={}
             label="名称"
             size={'large'}
+            ref={nameRef}
             textContentType={'name'}
             onChangeText={name => (createPetParam.name = name)}
           />
@@ -185,6 +189,14 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
             size={'large'}
             label="生日"
             date={date}
+            onFocus={() => {
+              // @ts-ignore
+              nameRef.current.blur();
+              // @ts-ignore
+              weightRef.current.blur();
+              // @ts-ignore
+              descRef.current.blur();
+            }}
             onSelect={nextDate => {
               setDate(nextDate);
               createPetParam.birthday = nextDate;
@@ -197,7 +209,8 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
               //   caption={}
               label="体重kg"
               size={'large'}
-              keyboardType={'number-pad'}
+              keyboardType={'numeric'}
+              ref={weightRef}
               style={{ flex: 1, marginRight: pxToDp(20) }}
               textContentType={'name'}
               onChangeText={number => (createPetParam.weight = String(number) + 'kg')}
@@ -229,6 +242,7 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
             //   caption={}
             multiline={true}
             label="爱好/食物"
+            ref={descRef}
             size={'large'}
             style={{ flex: 1, minHeight: pxToDp(64), maxHeight: pxToDp(64) }}
             caption={props => (
