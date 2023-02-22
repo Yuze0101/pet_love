@@ -6,6 +6,7 @@ import { UserCenterScreenProps } from '../types';
 import { pxToDp } from '../constants/Layout';
 import Colors from '../constants/Colors';
 import { queryDetail } from '../api';
+import storage from '../utils/storage';
 const { themeColor } = Colors;
 interface UserInfo {
   username: string;
@@ -34,11 +35,19 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
       } else {
         setHaveUserInfo(true);
         setUserInfo(userInfo);
+        await storage.save({
+          key: 'userData',
+          data: userInfo,
+        });
       }
       if (petInfoList == null) {
         setHavePets(false);
       } else {
         setHavePets(true);
+        await storage.save({
+          key: 'petData',
+          data: petInfoList,
+        });
         if (petInfoList.length > 0) {
           petInfoList = petInfoList.map((item: any, index: number) => {
             if (index === 0) {

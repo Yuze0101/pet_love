@@ -4,6 +4,7 @@ import { UserCenterParamList } from '../types';
 import UserCenterScreen from '../screens/UserCenterScreen';
 import PetInfoScreen from '../screens/PetInfoScreen';
 import SettingScreen from '../screens/SettingScreen';
+import EditUserScreen from '../screens/EditUserScreen';
 
 const Stack = createNativeStackNavigator<UserCenterParamList>();
 type Props = {};
@@ -14,6 +15,7 @@ export default function UserCenterNavigator({}: Props) {
       <Stack.Screen name="Main" component={UserCenterScreen} options={{ headerShown: false }} />
       <Stack.Screen name="PetInfo" component={PetInfoScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Setting" component={SettingScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="EditUser" component={EditUserScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }

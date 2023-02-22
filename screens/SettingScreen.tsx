@@ -5,7 +5,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { UserCenterScreenProps } from '../types';
 import { pxToDp } from '../constants/Layout';
 import Colors from '../constants/Colors';
-import { queryDetail } from '../api';
+import storage from '../utils/storage';
+import { useLinkTo } from '@react-navigation/native';
 const { themeColor } = Colors;
 interface UserInfo {
   username: string;
@@ -15,49 +16,35 @@ interface UserInfo {
 }
 export default function SettingScreen({ navigation }: UserCenterScreenProps<'Setting'>) {
   const insets = useSafeAreaInsets();
-  const [loading, setLoading] = useState(true);
-  const [haveUserInfo, setHaveUserInfo] = useState(false);
+  const linkTo = useLinkTo();
   const [userInfo, setUserInfo] = useState({} as UserInfo);
-  const [havePets, setHavePets] = useState(false);
-  const [petInfoList, setPetInfoList] = useState([] as any);
-  const [currentIndex, setCurrentIndex] = useState(null as any);
   const getUserInfo = async () => {
-    setLoading(true);
-    console.log('getUserInfo');
-    let res: any = await queryDetail({});
-    console.log(res);
-    if (res.success) {
-      let userInfo: any = res.data.userInfo;
-      let petInfoList: any = res.data.petInfoList;
-      if (userInfo == null) {
-        setHaveUserInfo(false);
-      } else {
-        setHaveUserInfo(true);
-        setUserInfo(userInfo);
-      }
-      if (petInfoList == null) {
-        setHavePets(false);
-      } else {
-        setHavePets(true);
-        if (petInfoList.length > 0) {
-          petInfoList = petInfoList.map((item: any, index: number) => {
-            if (index === 0) {
-              item.active = true;
-            } else {
-              item.active = false;
-            }
-            return item;
-          });
-        }
-        setCurrentIndex(0);
-        setPetInfoList(petInfoList);
-      }
-      setLoading(false);
-    }
+    await storage
+      .load({
+        key: 'userData',
+      })
+      .then(value => {
+        setUserInfo(value);
+      })
+      .catch(error => {
+        console.log('Err: ' + error);
+      });
   };
   useEffect(() => {
     getUserInfo();
   }, []);
+  const logOut = async () => {
+    await storage.remove({
+      key: 'userData',
+    });
+    await storage.remove({
+      key: 'petData',
+    });
+    await storage.remove({
+      key: 'userInfo',
+    });
+    linkTo('/welcome');
+  };
   return (
     <Layout
       style={{
@@ -88,9 +75,44 @@ export default function SettingScreen({ navigation }: UserCenterScreenProps<'Set
           onPress={() => navigation.goBack()}
         />
       </Layout>
-      <Layout>
-
+      <Layout style={styles.topInfo}>
+        <Layout style={styles.topInfoLeft}>
+          <Image resizeMode="cover" source={{ uri: userInfo.portraitUrl }} style={styles.topInfoLeftImg} />
+          <Text style={styles.topInfoLeftName}>{userInfo.username}</Text>
+        </Layout>
+        <Layout style={styles.topInfoRight}>
+          <TouchableWithoutFeedback onPress={() => navigation.navigate('EditUser')}>
+            <Image source={require('../assets/images/edit.png')} style={styles.topInfoRightIcon} />
+          </TouchableWithoutFeedback>
+        </Layout>
       </Layout>
+      <Layout
+        style={{
+          ...styles.SettingListItem,
+          marginTop: pxToDp(20),
+        }}
+      >
+        <Text style={styles.SettingListItemTitle}>用户协议</Text>
+        <Text style={styles.SettingListItemRight}>{'>'}</Text>
+      </Layout>
+      <Layout style={styles.SettingListItem}>
+        <Text style={styles.SettingListItemTitle}>隐私政策</Text>
+        <Text style={styles.SettingListItemRight}>{'>'}</Text>
+      </Layout>
+      <Layout style={styles.SettingListItem}>
+        <Text style={styles.SettingListItemTitle}>注销账号</Text>
+        <Text style={styles.SettingListItemRight}>{'>'}</Text>
+      </Layout>
+      <TouchableWithoutFeedback
+        onPress={() => {
+          logOut();
+        }}
+      >
+        <Layout style={styles.SettingListItem}>
+          <Text style={styles.SettingListItemTitle}>退出登录</Text>
+          <Text style={styles.SettingListItemRight}>{'>'}</Text>
+        </Layout>
+      </TouchableWithoutFeedback>
     </Layout>
   );
 }
@@ -141,100 +163,16 @@ const styles = StyleSheet.create({
     width: pxToDp(20),
     height: pxToDp(20),
   },
-  petList: {
-    marginTop: pxToDp(50),
+  SettingListItem: {
     width: '100%',
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  petListItem: {
-    width: pxToDp(72),
-    height: pxToDp(72),
-    borderRadius: pxToDp(36),
-    backgroundColor: '#E8EAEC',
-    marginRight: pxToDp(20),
-  },
-  petListItemSelected: {
-    borderWidth: pxToDp(3),
-    borderColor: themeColor.orange,
-    backgroundColor: '#E8EAEC',
-  },
-  petInfo: {
+    height: pxToDp(50),
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: '100%',
+    borderTopWidth: pxToDp(1),
+    borderTopColor: '#E8EAEC',
   },
-  petInfoLeft: {
-    paddingTop: pxToDp(40),
-    paddingBottom: pxToDp(40),
-  },
-  petName: {
-    fontSize: pxToDp(18),
-  },
-  petDesc: {
-    fontSize: pxToDp(12),
-  },
-  petInfoItem: {
-    width: pxToDp(90),
-    height: pxToDp(64),
-    borderWidth: pxToDp(1),
-    borderColor: '#E8EAEC',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#fff',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  petInfoItemTitle: {
-    fontSize: pxToDp(14),
-  },
-  petInfoItemDesc: {
-    fontSize: pxToDp(16),
-  },
-  petData: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    width: '100%',
-    paddingTop: pxToDp(40),
-  },
-  petDataItem: {
-    marginRight: pxToDp(20),
-  },
-  petDataItemTitle: {
-    fontSize: pxToDp(18),
-  },
-  petDataItemDesc: {
-    fontSize: pxToDp(12),
-  },
-  cardListTitle: {
-    width: '100%',
-    marginTop: pxToDp(40),
-    fontSize: pxToDp(20),
-    textAlign: 'left',
-  },
-  cardList: {
-    marginTop: pxToDp(20),
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
-    flexWrap: 'wrap',
-  },
-  cardListItem: {
-    width: '50%',
-  },
+  SettingListItemTitle: {},
+  SettingListItemRight: {},
 });
