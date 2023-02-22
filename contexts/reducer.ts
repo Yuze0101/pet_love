@@ -1,6 +1,5 @@
 import storage from '../utils/storage';
-import { User } from './UserContext';
-import { Pet } from './PetContext';
+import { User, Pet } from '../types';
 import { Actions, ActioinType } from '../types';
 
 export const reducer = async (state: any, action: Actions) => {

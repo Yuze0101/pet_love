@@ -2,7 +2,7 @@ import { StyleSheet, View, Image, TouchableWithoutFeedback } from 'react-native'
 import { useEffect, useState } from 'react';
 import { Text, Layout, Button, Input, Icon, Spinner } from '@ui-kitten/components';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { RootTabScreenProps } from '../types';
+import { UserCenterScreenProps } from '../types';
 import { pxToDp } from '../constants/Layout';
 import Colors from '../constants/Colors';
 import { queryDetail } from '../api';
@@ -13,7 +13,7 @@ interface UserInfo {
   token: string;
   followCount: number;
 }
-export default function UserCenterScreen({ navigation }: RootTabScreenProps<'TabFour'>) {
+export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'Main'>) {
   const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(true);
   const [haveUserInfo, setHaveUserInfo] = useState(false);
@@ -140,7 +140,7 @@ export default function UserCenterScreen({ navigation }: RootTabScreenProps<'Tab
                 width: pxToDp(300),
                 height: pxToDp(50),
 
-            }}>{"新增宠物"}</Button></>
+            }} onPress={()=> navigation.navigate('PetInfo')}>{"新增宠物"}</Button></>
           )}
           <View style={styles.petData}>
             <View style={styles.petDataItem}>

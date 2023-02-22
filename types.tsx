@@ -19,8 +19,7 @@ export type RootStackParamList = {
   NotFound: undefined;
   Welcome: undefined;
   Login: undefined;
-  Register: NavigatorScreenParams<RootTabParamList> | undefined;
-  PetInfo: undefined;
+  Register: undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<
@@ -32,12 +31,22 @@ export type RootTabParamList = {
   TabOne: undefined;
   TabTwo: undefined;
   TabThree: undefined;
-  TabFour: undefined;
+  UserCenter: NativeStackScreenProps<UserCenterParamList>;
 };
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<
   BottomTabScreenProps<RootTabParamList, Screen>,
   NativeStackScreenProps<RootStackParamList>
+>;
+
+export type UserCenterParamList = {
+  Main: undefined;
+  PetInfo: undefined;
+};
+
+export type UserCenterScreenProps<Screen extends keyof UserCenterParamList> = NativeStackScreenProps<
+  UserCenterParamList,
+  Screen
 >;
 
 export enum ActioinType {
@@ -46,4 +55,22 @@ export enum ActioinType {
 }
 export type Actions = {
   type: ActioinType;
+};
+export type Pet = {
+  id?: number;
+  name: string;
+  portraitUrl: string;
+  age: number;
+  birthday: Date;
+  gender: 'MALE' | 'FEMALE';
+  type: 'CAT' | 'DOG' | 'OTHER';
+  weight: string;
+  desc: string;
+  cardCount: number;
+  fansCount: number;
+};
+export type User = {
+  username: string;
+  portraitUrl: string;
+  follow_count: number;
 };
