@@ -12,7 +12,7 @@ import * as React from 'react';
 import { ColorSchemeName, Pressable, View } from 'react-native';
 
 import Colors from '../constants/Colors';
-import useColorScheme from '../hooks/useColorScheme';
+// import useColorScheme from '../hooks/useColorScheme';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import ModalScreen from '../screens/ModalScreen';
 import NotFoundScreen from '../screens/NotFoundScreen';
@@ -22,9 +22,9 @@ import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../typ
 import LinkingConfiguration from './LinkingConfiguration';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
-import PetInfoScreen from '../screens/PetInfoScreen';
-import UserCenterScreen from '../screens/UserCenterScreen';
 import UserCenterNavigator from './UserCenterNavigator';
+
+const { themeColor } = Colors;
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
@@ -42,7 +42,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
   return (
-    <Stack.Navigator initialRouteName="Welcome">
+    <Stack.Navigator initialRouteName="Root">
       <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
@@ -69,75 +69,76 @@ function RootNavigator() {
 const BottomTab = createBottomTabNavigator<RootTabParamList>();
 
 function BottomTabNavigator() {
-  const colorScheme = useColorScheme();
+  // const colorScheme = useColorScheme();
   const insets = useSafeAreaInsets();
 
   return (
-    <View
-      style={{
-        // paddingTop: insets.top,
-        flex: 1,
-        paddingBottom: insets.bottom,
-        // paddingLeft: pxToDp(24),
-        // paddingRight: pxToDp(24),
+    // <View
+    //   style={{
+    //     // paddingTop: insets.top,
+    //     flex: 1,
+    //     paddingBottom: insets.bottom,
+    //     // paddingLeft: pxToDp(24),
+    //     // paddingRight: pxToDp(24),
+    //   }}
+    // >
+    <BottomTab.Navigator
+      initialRouteName="TabOne"
+      screenOptions={{
+        tabBarActiveTintColor: themeColor.orange,
+        tabBarShowLabel: false,
       }}
     >
-      <BottomTab.Navigator
-        initialRouteName="TabOne"
-        screenOptions={{
-          tabBarActiveTintColor: Colors[colorScheme].tint,
+      <BottomTab.Screen
+        name="TabOne"
+        component={TabOneScreen}
+        options={({ navigation }: RootTabScreenProps<'TabOne'>) => ({
+          title: 'Tab One',
+          tabBarIcon: ({ color }) => <TabBarIcon name="map" color={color} />,
+          // headerRight: () => (
+          // <Pressable
+          //   onPress={() => navigation.navigate('Modal')}
+          //   style={({ pressed }) => ({
+          //     opacity: pressed ? 0.5 : 1,
+          //   })}
+          // >
+          //   <FontAwesome
+          //     name="info-circle"
+          //     size={25}
+          //     color={Colors[colorScheme].text}
+          //     style={{ marginRight: 15 }}
+          //   />
+          // </Pressable>
+          // ),
+        })}
+      />
+      <BottomTab.Screen
+        name="TabTwo"
+        component={TabTwoScreen}
+        options={{
+          title: 'Tab Two',
+          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         }}
-      >
-        <BottomTab.Screen
-          name="TabOne"
-          component={TabOneScreen}
-          options={({ navigation }: RootTabScreenProps<'TabOne'>) => ({
-            title: 'Tab One',
-            tabBarIcon: ({ color }) => <TabBarIcon name="map" color={color} />,
-            headerRight: () => (
-              <Pressable
-                onPress={() => navigation.navigate('Modal')}
-                style={({ pressed }) => ({
-                  opacity: pressed ? 0.5 : 1,
-                })}
-              >
-                <FontAwesome
-                  name="info-circle"
-                  size={25}
-                  color={Colors[colorScheme].text}
-                  style={{ marginRight: 15 }}
-                />
-              </Pressable>
-            ),
-          })}
-        />
-        <BottomTab.Screen
-          name="TabTwo"
-          component={TabTwoScreen}
-          options={{
-            title: 'Tab Two',
-            tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          }}
-        />
-        <BottomTab.Screen
-          name="TabThree"
-          component={TabTwoScreen}
-          options={{
-            title: 'Tab Two',
-            tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          }}
-        />
-        <BottomTab.Screen
-          name='UserCenter'
-          component={UserCenterNavigator}
-          options={{
-            headerShown: false,
-            title: 'Tab Four',
-            tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          }}
-        />
-      </BottomTab.Navigator>
-    </View>
+      />
+      <BottomTab.Screen
+        name="TabThree"
+        component={TabTwoScreen}
+        options={{
+          title: 'Tab Two',
+          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+        }}
+      />
+      <BottomTab.Screen
+        name="UserCenter"
+        component={UserCenterNavigator}
+        options={{
+          headerShown: false,
+          title: 'Tab Four',
+          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+        }}
+      />
+    </BottomTab.Navigator>
+    // </View>
   );
 }
 
