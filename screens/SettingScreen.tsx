@@ -13,7 +13,7 @@ interface UserInfo {
   token: string;
   followCount: number;
 }
-export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'Main'>) {
+export default function SettingScreen({ navigation }: UserCenterScreenProps<'Setting'>) {
   const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(true);
   const [haveUserInfo, setHaveUserInfo] = useState(false);
@@ -59,116 +59,39 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
     getUserInfo();
   }, []);
   return (
-    <Layout
+    <View
       style={{
-        ...styles.container,
-        paddingTop: loading ? pxToDp(100) : insets.top,
+        flex: 1,
+        paddingTop: insets.top,
         paddingBottom: insets.bottom,
+        paddingLeft: pxToDp(24),
+        paddingRight: pxToDp(24),
       }}
     >
-      {loading ? (
-        <>
-          <Spinner />
-        </>
-      ) : (
-        <>
-          <View style={styles.topInfo}>
-            <View style={styles.topInfoLeft}>
-              <Image resizeMode="cover" source={{ uri: userInfo.portraitUrl }} style={styles.topInfoLeftImg} />
-              <Text style={styles.topInfoLeftName}>{userInfo.username}</Text>
-            </View>
-            <View style={styles.topInfoRight}>
-              {petInfoList.length > 0 ? <Button>{'新增宠物'}</Button> : null}
-              <TouchableWithoutFeedback onPress={()=> navigation.navigate('Setting')}>
-                <Image source={require('../assets/images/setting.png')} style={styles.topInfoRightIcon} />
-              </TouchableWithoutFeedback>
-            </View>
-          </View>
-          {havePets ? (
-            <>
-              <View style={styles.petList}>
-                {petInfoList.map((item: any, index: number) => {
-                  return (
-                    <TouchableWithoutFeedback
-                      onPress={() => {
-                        let newPetInfoList: any = petInfoList;
-                        newPetInfoList[currentIndex].active = false;
-                        newPetInfoList[index].active = true;
-                        setCurrentIndex(index);
-                        setPetInfoList(newPetInfoList);
-                      }}
-                    >
-                      <Image
-                        source={{ uri: item.portraitUrl }}
-                        style={
-                          item.active
-                            ? { ...styles.petListItemSelected, ...styles.petListItem }
-                            : { ...styles.petListItem }
-                        }
-                      />
-                    </TouchableWithoutFeedback>
-                  );
-                })}
-              </View>
-              <View style={styles.petInfo}>
-                <View style={styles.petInfoLeft}>
-                  <Text style={styles.petName}>{petInfoList[currentIndex].name}</Text>
-                  <Text style={styles.petDesc}>{petInfoList[currentIndex].desc}</Text>
-                </View>
-                <Image source={require('../assets/images/edit.png')} />
-              </View>
-              <View style={styles.petInfo}>
-                <View style={styles.petInfoItem}>
-                  <Text style={styles.petInfoItemTitle}>{'年龄'}</Text>
-                  <Text style={styles.petInfoItemDesc}>{petInfoList[currentIndex].age}</Text>
-                </View>
-                <View style={styles.petInfoItem}>
-                  <Text style={styles.petInfoItemTitle}>{'性别'}</Text>
-                  <Text style={styles.petInfoItemDesc}>{petInfoList[currentIndex].gender == 'MALE' ? '公' : '母'}</Text>
-                </View>
-                <View style={styles.petInfoItem}>
-                  <Text style={styles.petInfoItemTitle}>{'体重(kg)'}</Text>
-                  <Text style={styles.petInfoItemDesc}>{petInfoList[currentIndex].weight}</Text>
-                </View>
-              </View>
-            </>
-          ) : (
-            <>
-            <Button style={{
-                marginTop: pxToDp(100),
-                marginBottom: pxToDp(100),
-                width: pxToDp(300),
-                height: pxToDp(50),
-
-            }} onPress={()=> navigation.navigate('PetInfo')}>{"新增宠物"}</Button></>
-          )}
-          <View style={styles.petData}>
-            <View style={styles.petDataItem}>
-              <Text style={styles.petDataItemTitle}>{havePets ? petInfoList[currentIndex].cardCount : 0}</Text>
-              <Text style={styles.petDataItemDesc}>{'动态'}</Text>
-            </View>
-            <View style={styles.petDataItem}>
-              <Text style={styles.petDataItemTitle}>{havePets ? petInfoList[currentIndex].fansCount : 0}</Text>
-              <Text style={styles.petDataItemDesc}>{'关注'}</Text>
-            </View>
-            <View style={styles.petDataItem}>
-              <Text style={styles.petDataItemTitle}>{havePets ? petInfoList[currentIndex].fansCount : 0}</Text>
-              <Text style={styles.petDataItemDesc}>{'粉丝'}</Text>
-            </View>
-          </View>
-          {havePets ? (
-            <>
-              <Text style={styles.cardListTitle}>{'动态'}</Text>
-              <View style={styles.cardList}>
-                <View style={styles.cardListItem}></View>
-              </View>
-            </>
-          ) : (
-            <></>
-          )}
-        </>
-      )}
-    </Layout>
+      <View style={{ height: pxToDp(45), width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
+        <Button
+          // appearance="outline"
+          status="basic"
+          accessoryRight={() => {
+            return (
+              <Icon
+                fill={themeColor.orange}
+                style={{ width: pxToDp(18), height: pxToDp(18) }}
+                name="arrow-back-outline"
+              />
+            );
+          }}
+          style={{
+            width: pxToDp(45),
+            borderRadius: pxToDp(45),
+          }}
+          onPress={() => navigation.goBack()}
+        />
+      </View>
+      <View>
+        
+      </View>
+    </View>
   );
 }
 
