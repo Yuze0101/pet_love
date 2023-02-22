@@ -7,8 +7,7 @@ export const getVerificationCode = (params: {}) => get({ url: '/pet/account/getV
 
 export const queryDetail = (params: {}) => get({ url: '/pet/userInfo/queryDetail.json', params });
 export const updateUserInfo = (params: {}) => post({ url: '/pet/userInfo/updateUserInfo.json', params });
-export const upload = (params: {}, customContentType?:string) =>
-  post({ url: '/pet/tool/upload.json', params }, customContentType);
+export const upload = (params: {}) => post({ url: '/pet/tool/upload.json', params }, 'multipart/form-data');
 export const createPet = (params: {}) => post({ url: '/pet/userInfo/createPet.json', params });
 export const follow_count = (params: {}) => post({ url: '/pet/userInfo/editPet.json', params });
 export const deletePet = (params: {}) => get({ url: ' /pet/userInfo/deletePet.json', params });
