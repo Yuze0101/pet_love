@@ -1,4 +1,4 @@
-import { StyleSheet, View, Image, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, Image, TouchableWithoutFeedback } from 'react-native';
 import { useEffect, useState } from 'react';
 import { Text, Layout, Button, Input, Icon, Spinner } from '@ui-kitten/components';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -59,7 +59,7 @@ export default function SettingScreen({ navigation }: UserCenterScreenProps<'Set
     getUserInfo();
   }, []);
   return (
-    <View
+    <Layout
       style={{
         flex: 1,
         paddingTop: insets.top,
@@ -68,7 +68,7 @@ export default function SettingScreen({ navigation }: UserCenterScreenProps<'Set
         paddingRight: pxToDp(24),
       }}
     >
-      <View style={{ height: pxToDp(45), width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
+      <Layout style={{ height: pxToDp(45), width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
         <Button
           // appearance="outline"
           status="basic"
@@ -87,11 +87,11 @@ export default function SettingScreen({ navigation }: UserCenterScreenProps<'Set
           }}
           onPress={() => navigation.goBack()}
         />
-      </View>
-      <View>
-        
-      </View>
-    </View>
+      </Layout>
+      <Layout>
+
+      </Layout>
+    </Layout>
   );
 }
 
