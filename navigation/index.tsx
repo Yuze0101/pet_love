@@ -5,14 +5,12 @@
  */
 import { FontAwesome } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as React from 'react';
-import { ColorSchemeName, Pressable, View } from 'react-native';
 
 import Colors from '../constants/Colors';
-// import useColorScheme from '../hooks/useColorScheme';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import ModalScreen from '../screens/ModalScreen';
 import NotFoundScreen from '../screens/NotFoundScreen';
@@ -23,12 +21,14 @@ import LinkingConfiguration from './LinkingConfiguration';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import UserCenterNavigator from './UserCenterNavigator';
+// import { BottomNavigation, BottomNavigationTab, Layout, Text } from '@ui-kitten/components';
+import {BottomNavigatoin} from './BottomNavigatoin';
 
 const { themeColor } = Colors;
 
-export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
+export default function Navigation() {
   return (
-    <NavigationContainer linking={LinkingConfiguration} theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <NavigationContainer linking={LinkingConfiguration}>
       <RootNavigator />
     </NavigationContainer>
   );
@@ -69,24 +69,16 @@ function RootNavigator() {
 const BottomTab = createBottomTabNavigator<RootTabParamList>();
 
 function BottomTabNavigator() {
-  // const colorScheme = useColorScheme();
-  const insets = useSafeAreaInsets();
+  // const insets = useSafeAreaInsets();
 
   return (
-    // <View
-    //   style={{
-    //     // paddingTop: insets.top,
-    //     flex: 1,
-    //     paddingBottom: insets.bottom,
-    //     // paddingLeft: pxToDp(24),
-    //     // paddingRight: pxToDp(24),
-    //   }}
-    // >
     <BottomTab.Navigator
       initialRouteName="TabOne"
+      tabBar={props => BottomNavigatoin({ ...props })}
       screenOptions={{
         tabBarActiveTintColor: themeColor.orange,
         tabBarShowLabel: false,
+        tabBarHideOnKeyboard: true,
       }}
     >
       <BottomTab.Screen
@@ -95,21 +87,6 @@ function BottomTabNavigator() {
         options={({ navigation }: RootTabScreenProps<'TabOne'>) => ({
           title: 'Tab One',
           tabBarIcon: ({ color }) => <TabBarIcon name="map" color={color} />,
-          // headerRight: () => (
-          // <Pressable
-          //   onPress={() => navigation.navigate('Modal')}
-          //   style={({ pressed }) => ({
-          //     opacity: pressed ? 0.5 : 1,
-          //   })}
-          // >
-          //   <FontAwesome
-          //     name="info-circle"
-          //     size={25}
-          //     color={Colors[colorScheme].text}
-          //     style={{ marginRight: 15 }}
-          //   />
-          // </Pressable>
-          // ),
         })}
       />
       <BottomTab.Screen
@@ -138,9 +115,10 @@ function BottomTabNavigator() {
         }}
       />
     </BottomTab.Navigator>
-    // </View>
   );
 }
+
+
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/

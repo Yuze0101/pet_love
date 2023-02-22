@@ -10,6 +10,7 @@ import {
   Radio,
   RadioGroup,
   I18nConfig,
+  Layout,
 } from '@ui-kitten/components';
 import { View, Image, TouchableWithoutFeedback, Platform, Keyboard } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -22,6 +23,7 @@ import { UserCenterScreenProps } from '../types';
 import CatIcon from '../components/CatIcon';
 import DogIcon from '../components/DogIcon';
 import { upload, createPet } from '../api';
+import { CustomTopNavigation } from '../components/CustomTopNavigation';
 
 const { themeColor } = Colors;
 
@@ -31,6 +33,7 @@ const workAround = (props: any) => {
   delete newObj.style.tintColor;
   return newObj;
 };
+
 const CalendarIcon = (props: any) => <Icon {...workAround(props)} name="calendar" />;
 
 const i18n: I18nConfig = {
@@ -66,16 +69,7 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
   const weightRef = useRef(null);
   const descRef = useRef(null);
 
-  const createPetParam: CreatePetParam = {
-    name: '',
-    portraitUrl: '',
-    age: 0,
-    birthday: new Date(2000, 1, 1),
-    gender: 'FEMALE',
-    type: 'OTHER',
-    weight: '0' + 'kg',
-    desc: '',
-  };
+  const createPetParam: any = {};
 
   const userCreatePet = async () => {
     try {
@@ -92,7 +86,7 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [4, 4],
       quality: 0.2,
     });
     if (!result.canceled) {
@@ -120,7 +114,7 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View
+      <Layout
         style={{
           flex: 1,
           paddingTop: insets.top,
@@ -129,28 +123,8 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
           paddingRight: pxToDp(24),
         }}
       >
-        <View style={{ height: pxToDp(45), width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Button
-            // appearance="outline"
-            status="basic"
-            accessoryRight={() => {
-              return (
-                <Icon
-                  fill={themeColor.orange}
-                  style={{ width: pxToDp(18), height: pxToDp(18) }}
-                  name="arrow-back-outline"
-                />
-              );
-            }}
-            style={{
-              width: pxToDp(45),
-              borderRadius: pxToDp(45),
-            }}
-            onPress={() => navigation.goBack()}
-          />
-          <Button appearance="ghost">完成</Button>
-        </View>
-        <View
+        <CustomTopNavigation title="返回" action={() => navigation.goBack()} />
+        <Layout
           style={{
             flex: 1,
             alignItems: 'center',
@@ -158,7 +132,7 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
           }}
         >
           <TouchableWithoutFeedback onPress={() => pickImage()}>
-            <View
+            <Layout
               style={{
                 width: pxToDp(80),
                 height: pxToDp(80),
@@ -168,7 +142,7 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
               }}
             >
               <Image></Image>
-            </View>
+            </Layout>
           </TouchableWithoutFeedback>
           <Input
             // @ts-ignore
@@ -201,7 +175,7 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
             }}
             accessoryRight={CalendarIcon}
           />
-          <View style={{ width: '100%', flexDirection: 'row' }}>
+          <Layout style={{ width: '100%', flexDirection: 'row' }}>
             <Input
               // @ts-ignore
               //   caption={}
@@ -213,7 +187,7 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
               textContentType={'name'}
               onChangeText={number => (createPetParam.weight = String(number) + 'kg')}
             />
-            <View style={{ flex: 1 }}>
+            <Layout style={{ flex: 1 }}>
               <Text category="label" appearance="hint">
                 性别
               </Text>
@@ -233,8 +207,8 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
                 <Radio style={{ flex: 1 }}>公</Radio>
                 <Radio style={{ flex: 1 }}>母</Radio>
               </RadioGroup>
-            </View>
-          </View>
+            </Layout>
+          </Layout>
           <Input
             // @ts-ignore
             //   caption={}
@@ -258,7 +232,7 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
               }
             }}
           />
-          <View
+          <Layout
             style={{
               marginTop: pxToDp(20),
               flexDirection: 'row',
@@ -269,14 +243,14 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
           >
             {/* TODO 替换渲染 */}
             <RenderCardList list={[{ type: 'cat', fill: '' }, { type: 'dog', fill: '' }, { type: 'other' }]} />
-          </View>
+          </Layout>
           <Button style={{ width: '90%', marginTop: pxToDp(25) }} onPress={() => userCreatePet()}>
             完成
           </Button>
-        </View>
+        </Layout>
 
         <StatusBar style={'auto'} />
-      </View>
+      </Layout>
     </TouchableWithoutFeedback>
   );
 }

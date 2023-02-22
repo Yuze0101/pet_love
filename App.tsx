@@ -1,4 +1,4 @@
-import { useReducer, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { RootSiblingParent } from 'react-native-root-siblings';
@@ -9,6 +9,7 @@ import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import { IconRegistry } from '@ui-kitten/components';
 
 import useCachedResources from './hooks/useCachedResources';
+// TODO 适配暗黑模式
 import useColorScheme from './hooks/useColorScheme';
 import { useAsyncReducer } from './hooks/useAsyncReducer';
 // TODO 可以做弹通知回到app刷新app信息
@@ -21,8 +22,9 @@ import { PetContext, initialState as petInitialState } from './contexts/PetConte
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
-  const colorScheme = useColorScheme();
+  const colorSchema = useColorScheme()
 
+  const appTheme = colorSchema == 'light' ? {...eva.light,...theme} : {...eva.dark,...theme}
   // useAppState();
 
   const [userState, userDispatch] = useAsyncReducer(reducer, userInitialState);
@@ -39,11 +41,11 @@ export default function App() {
     return (
       <RootSiblingParent>
         <IconRegistry icons={EvaIconsPack} />
-        <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
+        <ApplicationProvider {...eva} theme={appTheme}>
           <SafeAreaProvider>
             <UserContext.Provider value={userValue}>
               <PetContext.Provider value={petValue}>
-                <Navigation colorScheme={colorScheme} />
+                <Navigation/>
               </PetContext.Provider>
             </UserContext.Provider>
             <StatusBar />
