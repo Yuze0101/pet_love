@@ -23,9 +23,6 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
   const insets = useSafeAreaInsets();
   const [userInfo, userInfoDispatch] = useContext(UserContext);
   const [petInfoList, petInfoDispatch] = useContext(PetContext);
-  const [loading, setLoading] = useState(true);
-  const [haveUserInfo, setHaveUserInfo] = useState(false);
-  const [havePets, setHavePets] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   useEffect(() => {
     // dispatch({
@@ -50,69 +47,108 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
       {/* <Divider /> */}
       <Layout style={{ paddingLeft: pxToDp(24), paddingRight: pxToDp(24) }}>
         <Layout style={styles.petList}>
-          {petInfoList.map((item: any, index: number) => {
-            return (
+          {petInfoList ? (
+            <>
+              {petInfoList.map((item: any, index: number) => {
+                return (
+                  <TouchableWithoutFeedback
+                    key={index}
+                    onPress={() => {
+                      setCurrentIndex(index);
+                    }}
+                  >
+                    <Image
+                      key={index}
+                      source={{ uri: item.portraitUrl }}
+                      style={
+                        currentIndex == index
+                          ? { ...styles.petListItemSelected, ...styles.petListItem }
+                          : { ...styles.petListItem }
+                      }
+                    />
+                  </TouchableWithoutFeedback>
+                );
+              })}
+            </>
+          ) : (
+            <>
               <TouchableWithoutFeedback
-                key={index}
+                key={'addPetInfo'}
                 onPress={() => {
-                  setCurrentIndex(index);
+                  navigation.navigate('PetInfo', { id: undefined });
                 }}
               >
-                <Image
-                  key={index}
-                  source={{ uri: item.portraitUrl }}
-                  style={
-                    currentIndex == index
-                      ? { ...styles.petListItemSelected, ...styles.petListItem }
-                      : { ...styles.petListItem }
-                  }
+                <Layout style={{
+                  ...styles.petListItem,
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                  <Icon
+                    fill={themeColor.darkBrown}
+                    style={{ width: pxToDp(20), height: pxToDp(20) }}
+                    name="plus-outline"
+                  />
+                </Layout>
+              </TouchableWithoutFeedback>
+            </>
+          )}
+        </Layout>
+        {petInfoList ? (
+          <>
+            <Layout style={styles.petInfo}>
+              <Layout style={styles.petInfoLeft}>
+                <Text category="h2">{petInfoList[currentIndex].name ? petInfoList[currentIndex].name : '未命名'}</Text>
+                <Text category="s1">
+                  {petInfoList[currentIndex].desc ? petInfoList[currentIndex].desc : '无描述信息'}
+                </Text>
+              </Layout>
+              <TouchableWithoutFeedback
+                onPress={() => {
+                  navigation.navigate('PetInfo', { id: petInfoList[currentIndex].id });
+                }}
+              >
+                <Icon
+                  fill={themeColor.darkBrown}
+                  style={{ width: pxToDp(20), height: pxToDp(20) }}
+                  name="edit-2-outline"
                 />
               </TouchableWithoutFeedback>
-            );
-          })}
-        </Layout>
-        <Layout style={styles.petInfo}>
-          <Layout style={styles.petInfoLeft}>
-            <Text category="h2">{petInfoList[currentIndex].name ? petInfoList[currentIndex].name : '未命名'}</Text>
-            <Text category="s1">{petInfoList[currentIndex].desc ? petInfoList[currentIndex].desc : '无描述信息'}</Text>
-          </Layout>
-          <TouchableWithoutFeedback
-            onPress={() => {
-              navigation.navigate('PetInfo', { id: petInfoList[currentIndex].id });
-            }}
-          >
-            <Icon fill={themeColor.darkBrown} style={{ width: pxToDp(20), height: pxToDp(20) }} name="edit-2-outline" />
-          </TouchableWithoutFeedback>
-        </Layout>
-        <Layout style={styles.petInfo}>
-          <Layout style={styles.petInfoItem}>
-            <Text style={styles.petInfoItemTitle}>{'年龄'}</Text>
-            <Text style={styles.petInfoItemDesc}>{petInfoList[currentIndex].age}</Text>
-          </Layout>
-          <Layout style={styles.petInfoItem}>
-            <Text style={styles.petInfoItemTitle}>{'性别'}</Text>
-            <Text style={styles.petInfoItemDesc}>{petInfoList[currentIndex].gender == 'MALE' ? '公' : '母'}</Text>
-          </Layout>
-          <Layout style={styles.petInfoItem}>
-            <Text style={styles.petInfoItemTitle}>{'体重(kg)'}</Text>
-            <Text style={styles.petInfoItemDesc}>{petInfoList[currentIndex].weight}</Text>
-          </Layout>
-        </Layout>
+            </Layout>
+            <Layout style={styles.petInfo}>
+              <Layout style={styles.petInfoItem}>
+                <Text style={styles.petInfoItemTitle}>{'年龄'}</Text>
+                <Text style={styles.petInfoItemDesc}>{petInfoList[currentIndex].age}</Text>
+              </Layout>
+              <Layout style={styles.petInfoItem}>
+                <Text style={styles.petInfoItemTitle}>{'性别'}</Text>
+                <Text style={styles.petInfoItemDesc}>{petInfoList[currentIndex].gender == 'MALE' ? '公' : '母'}</Text>
+              </Layout>
+              <Layout style={styles.petInfoItem}>
+                <Text style={styles.petInfoItemTitle}>{'体重(kg)'}</Text>
+                <Text style={styles.petInfoItemDesc}>{petInfoList[currentIndex].weight}</Text>
+              </Layout>
+            </Layout>
+          </>
+        ) : (
+          <></>
+        )}
+
         <Layout style={styles.petData}>
           <Layout style={styles.petDataItem}>
-            <Text style={styles.petDataItemTitle}>{havePets ? petInfoList[currentIndex].cardCount : 0}</Text>
+            <Text style={styles.petDataItemTitle}>{petInfoList ? petInfoList[currentIndex].cardCount : 0}</Text>
             <Text style={styles.petDataItemDesc}>{'动态'}</Text>
           </Layout>
           <Layout style={styles.petDataItem}>
-            <Text style={styles.petDataItemTitle}>{havePets ? petInfoList[currentIndex].fansCount : 0}</Text>
+            <Text style={styles.petDataItemTitle}>{petInfoList ? petInfoList[currentIndex].fansCount : 0}</Text>
             <Text style={styles.petDataItemDesc}>{'关注'}</Text>
           </Layout>
           <Layout style={styles.petDataItem}>
-            <Text style={styles.petDataItemTitle}>{havePets ? petInfoList[currentIndex].fansCount : 0}</Text>
+            <Text style={styles.petDataItemTitle}>{petInfoList ? petInfoList[currentIndex].fansCount : 0}</Text>
             <Text style={styles.petDataItemDesc}>{'粉丝'}</Text>
           </Layout>
         </Layout>
-        {havePets ? (
+        {petInfoList ? (
           <>
             <Text style={styles.cardListTitle}>{'动态'}</Text>
             <Layout style={styles.cardList}>
