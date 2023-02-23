@@ -1,5 +1,5 @@
 import { StyleSheet, Image, TouchableWithoutFeedback } from 'react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { Text, Layout, Button, Input, Icon, Spinner } from '@ui-kitten/components';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { UserCenterScreenProps } from '../types';
@@ -7,6 +7,9 @@ import { pxToDp } from '../constants/Layout';
 import Colors from '../constants/Colors';
 import storage from '../utils/storage';
 import { useLinkTo } from '@react-navigation/native';
+import { UserContext } from '../contexts/UserContext';
+import { PetContext } from '../contexts/PetContext';
+import { CacheImage } from '../components/CacheImage';
 const { themeColor } = Colors;
 interface UserInfo {
   username: string;
@@ -17,22 +20,8 @@ interface UserInfo {
 export default function SettingScreen({ navigation }: UserCenterScreenProps<'Setting'>) {
   const insets = useSafeAreaInsets();
   const linkTo = useLinkTo();
-  const [userInfo, setUserInfo] = useState({} as UserInfo);
-  const getUserInfo = async () => {
-    await storage
-      .load({
-        key: 'userData',
-      })
-      .then(value => {
-        setUserInfo(value);
-      })
-      .catch(error => {
-        console.log('Err: ' + error);
-      });
-  };
-  useEffect(() => {
-    getUserInfo();
-  }, []);
+  const [userInfo, userInfoDispatch] = useContext(UserContext);
+  const [petInfoList, petInfoDispatch] = useContext(PetContext);
   const logOut = async () => {
     await storage.remove({
       key: 'userData',
@@ -77,12 +66,15 @@ export default function SettingScreen({ navigation }: UserCenterScreenProps<'Set
       </Layout>
       <Layout style={styles.topInfo}>
         <Layout style={styles.topInfoLeft}>
-          <Image resizeMode="cover" source={{ uri: userInfo.portraitUrl }} style={styles.topInfoLeftImg} />
+          <Layout style={{ ...styles.topInfoLeftImg, overflow: 'hidden' }}>
+            <CacheImage source={{ uri: userInfo.portraitUrl }} style={{ flex: 1 }} />
+          </Layout>
+
           <Text style={styles.topInfoLeftName}>{userInfo.username}</Text>
         </Layout>
         <Layout style={styles.topInfoRight}>
           <TouchableWithoutFeedback onPress={() => navigation.navigate('EditUser')}>
-            <Image source={require('../assets/images/edit.png')} style={styles.topInfoRightIcon} />
+            <Icon fill={themeColor.darkBrown} style={{ width: pxToDp(20), height: pxToDp(20) }} name="edit-2-outline" />
           </TouchableWithoutFeedback>
         </Layout>
       </Layout>

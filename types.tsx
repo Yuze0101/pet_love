@@ -47,7 +47,7 @@ export type UserCenterParamList = {
 };
 
 export type PetInfoProps = {
-  id: number;
+  id: number | undefined;
 };
 
 export type UserCenterScreenProps<Screen extends keyof UserCenterParamList> = NativeStackScreenProps<
