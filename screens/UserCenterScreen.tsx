@@ -11,6 +11,7 @@ import storage from '../utils/storage';
 import { CustomTopNavigation } from '../components/CustomTopNavigation';
 import { PetContext } from '../contexts/PetContext';
 import { UserContext } from '../contexts/UserContext';
+import { CacheImage } from '../components/CacheImage';
 const { themeColor } = Colors;
 interface UserInfo {
   username: string;
@@ -57,18 +58,51 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
                       setCurrentIndex(index);
                     }}
                   >
-                    <Image
+                    <Layout
                       key={index}
-                      source={{ uri: item.portraitUrl }}
                       style={
                         currentIndex == index
-                          ? { ...styles.petListItemSelected, ...styles.petListItem }
-                          : { ...styles.petListItem }
+                          ? { ...styles.petListItemSelected, ...styles.petListItem,
+                            overflow: 'hidden' }
+                          : { ...styles.petListItem ,
+                            overflow: 'hidden'}
                       }
-                    />
+                    >
+                      <CacheImage source={{ uri: item.portraitUrl }} style={{ flex: 1 }}></CacheImage>
+                    </Layout>
                   </TouchableWithoutFeedback>
                 );
               })}
+              <>
+                {petInfoList.length < 3 ? (
+                  <>
+                    <TouchableWithoutFeedback
+                      key={'addPetInfo'}
+                      onPress={() => {
+                        navigation.navigate('PetInfo', { id: undefined });
+                        // navigation.navigate('Setting');
+                      }}
+                    >
+                      <Layout
+                        style={{
+                          ...styles.petListItem,
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <Icon
+                          fill={themeColor.darkBrown}
+                          style={{ width: pxToDp(20), height: pxToDp(20) }}
+                          name="plus-outline"
+                        />
+                      </Layout>
+                    </TouchableWithoutFeedback>
+                  </>
+                ) : (
+                  <></>
+                )}
+              </>
             </>
           ) : (
             <>
@@ -76,14 +110,17 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
                 key={'addPetInfo'}
                 onPress={() => {
                   navigation.navigate('PetInfo', { id: undefined });
+                  // navigation.navigate('Setting');
                 }}
               >
-                <Layout style={{
-                  ...styles.petListItem,
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
+                <Layout
+                  style={{
+                    ...styles.petListItem,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
                   <Icon
                     fill={themeColor.darkBrown}
                     style={{ width: pxToDp(20), height: pxToDp(20) }}
