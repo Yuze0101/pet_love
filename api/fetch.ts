@@ -60,10 +60,14 @@ export const post = async (props: HttpsProps, customContentType?: string) => {
     .catch(error => {
       console.log('Err: ' + error);
     });
+  console.log('customContentType : ' + customContentType);
   if (customContentType) {
     headers['Content-Type'] = customContentType;
+  } else {
+    headers['Content-Type'] = 'application/json';
   }
   return new Promise((resolve, reject) => {
+    console.log(`fetch headers: ${JSON.stringify(headers)} fetch body : ${JSON.stringify(props.params)}`);
     fetch(baseUrl + props.url, {
       method: 'POST',
       headers,
