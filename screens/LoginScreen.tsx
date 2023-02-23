@@ -12,6 +12,7 @@ import { pxToDp } from '../constants/Layout';
 import { login } from '../api';
 import { RootStackScreenProps } from '../types';
 import storage from '../utils/storage';
+import { userQueryDetailAndSaveData } from '../utils/queryDetailAndSaveData';
 
 const icon = require('../assets/images/icon.png');
 const { themeColor } = Colors;
@@ -108,11 +109,10 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
         await storage.save({
           key: 'userInfo',
           data: {
-            username: res.data?.username,
-            portraitUrl: res.data.portraitUrl,
-            token: res.data?.token,
+            token: res.data.token,
           },
         });
+        await userQueryDetailAndSaveData();
         navigation.replace('Root');
       }
     } catch (error) {

@@ -3,6 +3,7 @@ import { User, Pet } from '../types';
 import { Actions, ActioinType } from '../types';
 
 export const reducer = async (state: any, action: Actions) => {
+  console.log(`state is ${JSON.stringify(state)} , actioin is ${JSON.stringify(action)}`);
   switch (action.type) {
     case ActioinType.getUserInfo:
       const userInfo: User = await new Promise((resolve, reject) => {
@@ -22,10 +23,10 @@ export const reducer = async (state: any, action: Actions) => {
         ...userInfo,
       };
     case ActioinType.getPetInfo:
-      const petInfo: Pet[] = await new Promise((resolve, reject) => {
+      const petInfoList: Pet[] = await new Promise((resolve, reject) => {
         storage
           .load({
-            key: 'petInfo',
+            key: 'petInfoList',
           })
           .then(value => {
             resolve(value);
@@ -35,6 +36,6 @@ export const reducer = async (state: any, action: Actions) => {
             reject(error);
           });
       });
-      return [...petInfo];
+      return [...petInfoList];
   }
 };

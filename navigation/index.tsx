@@ -22,7 +22,8 @@ import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import UserCenterNavigator from './UserCenterNavigator';
 // import { BottomNavigation, BottomNavigationTab, Layout, Text } from '@ui-kitten/components';
-import {BottomNavigatoin} from './BottomNavigatoin';
+import { BottomNavigatoin } from './BottomNavigatoin';
+import { useUpdateUserAndPetInfo } from '../hooks/useUpdateUserAndPetInfo';
 
 const { themeColor } = Colors;
 
@@ -70,7 +71,7 @@ const BottomTab = createBottomTabNavigator<RootTabParamList>();
 
 function BottomTabNavigator() {
   // const insets = useSafeAreaInsets();
-
+  useUpdateUserAndPetInfo();
   return (
     <BottomTab.Navigator
       initialRouteName="TabOne"
@@ -78,7 +79,7 @@ function BottomTabNavigator() {
       screenOptions={{
         tabBarActiveTintColor: themeColor.orange,
         tabBarShowLabel: false,
-        tabBarHideOnKeyboard:true,
+        tabBarHideOnKeyboard: true,
       }}
     >
       <BottomTab.Screen
@@ -117,8 +118,6 @@ function BottomTabNavigator() {
     </BottomTab.Navigator>
   );
 }
-
-
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/

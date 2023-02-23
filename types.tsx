@@ -41,9 +41,13 @@ export type RootTabScreenProps<Screen extends keyof RootTabParamList> = Composit
 
 export type UserCenterParamList = {
   Main: undefined;
-  PetInfo: undefined;
+  PetInfo: PetInfoProps;
   Setting: undefined;
   EditUser: undefined;
+};
+
+export type PetInfoProps = {
+  id: number;
 };
 
 export type UserCenterScreenProps<Screen extends keyof UserCenterParamList> = NativeStackScreenProps<

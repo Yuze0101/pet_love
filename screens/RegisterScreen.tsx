@@ -18,6 +18,8 @@ import { RootStackScreenProps } from '../types';
 import Colors from '../constants/Colors';
 import { pxToDp } from '../constants/Layout';
 import { login, signUp, getVerificationCode, resetPassword } from '../api';
+import { userQueryDetailAndSaveData } from '../utils/queryDetailAndSaveData';
+
 const locked = require('../assets/images/locked.png');
 const { themeColor } = Colors;
 type RegisterParams = {
@@ -187,11 +189,10 @@ export default function RegisterScreen({ route, navigation }: RootStackScreenPro
         await storage.save({
           key: 'userInfo',
           data: {
-            username: res.data?.username,
-            portraitUrl: res.data.portraitUrl,
             token: res.data?.token,
           },
         });
+        await userQueryDetailAndSaveData();
         navigation.replace('Root');
       }
     } catch (error) {
