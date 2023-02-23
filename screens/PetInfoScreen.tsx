@@ -13,7 +13,7 @@ import {
   Layout,
   Modal,
 } from '@ui-kitten/components';
-import { TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { TouchableWithoutFeedback, Keyboard, Image } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import * as ImagePicker from 'expo-image-picker';
@@ -26,7 +26,7 @@ import CatIcon from '../components/CatIcon';
 import DogIcon from '../components/DogIcon';
 import { upload, createPet, queryDetail, editPet, deletePet } from '../api';
 import { CustomTopNavigation } from '../components/CustomTopNavigation';
-import { CacheImage } from '../components/CacheImage';
+// import { CacheImage } from '../components/CacheImage';
 import { CustomModal, CustomModalStatus } from '../components/CustomModal';
 import { PetContext } from '../contexts/PetContext';
 import { UserContext } from '../contexts/UserContext';
@@ -82,8 +82,9 @@ export default function AnimalInfoScreen({ navigation, route }: UserCenterScreen
   const [gender, setGender] = useState(0);
   const [desc, setDesc] = useState('');
   const [choosedIndex, setChoosedIndex] = useState(0);
-  const [id, setId] = useState(NaN);
+  const [id, setId] = useState(-1);
   const [isEdit, setIsEdit] = useState(false);
+  const [fileUri, setFileUri] = useState('');
 
   // Modal
   const [modalState, setModalState] = useState('primary');
@@ -98,7 +99,8 @@ export default function AnimalInfoScreen({ navigation, route }: UserCenterScreen
         if (item.id == route.params.id) {
           setId(item.id);
           setName(item.name);
-          setDate(item.birthday), setWeight(item.weight);
+          setDate(new Date(item.birthday));
+          setWeight(item.weight);
           setGender(item.gender == 'MALE' ? 0 : 1);
           setDesc(item.desc);
           setImageUri(item.portraitUrl);
@@ -153,9 +155,9 @@ export default function AnimalInfoScreen({ navigation, route }: UserCenterScreen
       birthday: date,
       gender: gender == 0 ? 'MALE' : 'FEMALE',
       type: choosedIndex == 0 ? 'CAT' : choosedIndex == 1 ? 'DOG' : 'OTHER',
-      weight: weight + 'kg',
+      weight: weight,
       desc: desc,
-      portraitUrl: imageUri,
+      portraitUrl: fileUri,
     };
 
     // @ts-ignore
@@ -175,6 +177,45 @@ export default function AnimalInfoScreen({ navigation, route }: UserCenterScreen
           const petInfoList: any = result.data.petInfoList;
           await storage.save({
             key: 'petData',
+            data: petInfoList,
+          });
+        }
+        navigation.navigate('Main');
+      }
+    } catch (error) {
+      console.error('createPet Err : ' + error);
+    }
+  };
+  const userEditPet = async () => {
+    const createPetParam = {
+      id,
+      name: name,
+      birthday: date,
+      gender: gender == 0 ? 'MALE' : 'FEMALE',
+      type: choosedIndex == 0 ? 'CAT' : choosedIndex == 1 ? 'DOG' : 'OTHER',
+      weight: weight,
+      desc: desc,
+      portraitUrl: fileUri,
+    };
+
+    // @ts-ignore
+    // const canCreate = Object.keys(createPetParam).some(key => createPetParam[key] == '');
+    // if (canCreate) {
+    //   console.log('miss props');
+    //   return;
+    // }
+    // console.log(`canCreate ${canCreate} , createParam : ${JSON.stringify(createPetParam)}`);
+    try {
+      console.log('userEditPet : ' + JSON.stringify(createPetParam));
+      const res = (await editPet(createPetParam)) as any;
+      console.log(JSON.stringify('userEditPet res: ' + JSON.stringify(res)));
+      if (res.success) {
+        const result = (await queryDetail({})) as any;
+        if (result.success) {
+          const petInfoList: any = result.data.petInfoList;
+          console.log('petInfoList ' + JSON.stringify(petInfoList));
+          await storage.save({
+            key: 'petInfoList',
             data: petInfoList,
           });
         }
@@ -229,6 +270,7 @@ export default function AnimalInfoScreen({ navigation, route }: UserCenterScreen
         console.log('upload res : ' + JSON.stringify(res));
         if (res.success) {
           console.log(res.data);
+          setFileUri(res.data);
           setImageUri(localUri);
           setShowModal(false);
         }
@@ -239,6 +281,13 @@ export default function AnimalInfoScreen({ navigation, route }: UserCenterScreen
     }
   };
 
+  const clickOk = () => {
+    if (isEdit) {
+      userEditPet();
+    } else {
+      userCreatePet();
+    }
+  };
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <Layout
@@ -276,7 +325,7 @@ export default function AnimalInfoScreen({ navigation, route }: UserCenterScreen
                 overflow: 'hidden',
               }}
             >
-              {imageUri ? <CacheImage source={{ uri: imageUri }} style={{ flex: 1 }}></CacheImage> : null}
+              {imageUri ? <Image source={{ uri: imageUri }} style={{ flex: 1 }}></Image> : null}
             </Layout>
           </TouchableWithoutFeedback>
           <Input
@@ -379,7 +428,7 @@ export default function AnimalInfoScreen({ navigation, route }: UserCenterScreen
             {/* TODO 替换渲染 */}
             <RenderCardList list={[{ type: 'cat', fill: '' }, { type: 'dog', fill: '' }, { type: 'other' }]} />
           </Layout>
-          <Button style={{ width: '90%', marginTop: pxToDp(25) }} onPress={() => userCreatePet()}>
+          <Button style={{ width: '90%', marginTop: pxToDp(25) }} onPress={() => clickOk()}>
             完成
           </Button>
         </Layout>

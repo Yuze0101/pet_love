@@ -8,7 +8,7 @@ type CacheImageProps = {
 };
 
 export function CacheImage(props: CacheImageProps) {
-  const [imgUri, setImgUri] = useState('');
+  const [imgUri, setImgUri] = useState();
   useEffect(() => {
     async function loadImg() {
       let imgXt = getImgXtension(props.source.uri);
@@ -17,13 +17,19 @@ export function CacheImage(props: CacheImageProps) {
         console.log('Couldn`t load Image');
         return;
       }
-      const cacheFileUri = `${FileSystem.cacheDirectory}${props.source.uri.split('/').pop()}.${imgXt[0]}`;
+      console.log('xxxdx : ' + props.source.uri.split('/').pop() + ' 123 ' + imgXt[0]);
+      const cacheFileUri = `${FileSystem.cacheDirectory}${props.source.uri.split('/').pop()}`;
+      console.log('cacheURI + ' + cacheFileUri);
       const imgXistsInCache = await findImageInCache(cacheFileUri);
+      console.log('imgXistsInCache is  ' + JSON.stringify(imgXistsInCache));
       if (imgXistsInCache.exists) {
+        console.log('CachedImage  ');
+        // @ts-ignore
         setImgUri(cacheFileUri);
       } else {
         const cached = await cacheImage(props.source.uri, cacheFileUri);
         if (cached.isCached) {
+          // @ts-ignore
           setImgUri(cached.path as string);
         } else {
           console.log('load image error');
@@ -56,9 +62,11 @@ async function findImageInCache(uri: string) {
 }
 
 async function cacheImage(uri: string, cacheUri: string) {
+  console.log('cacheImage :  ' + JSON.stringify(uri) + ' cacheUri ' + cacheUri);
   try {
     const downloadImage = FileSystem.createDownloadResumable(uri, cacheUri);
     const downloaded = await downloadImage.downloadAsync();
+    console.log('downloaded ' + downloaded);
     return {
       isCached: true,
       err: false,

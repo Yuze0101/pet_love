@@ -1,7 +1,8 @@
-import { StyleSheet, Image, TouchableWithoutFeedback } from 'react-native';
-import { useEffect, useState, useContext } from 'react';
+import { StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import { useEffect, useState, useContext, useCallback } from 'react';
 import { Text, Layout, Button, Divider, Input, Icon, Spinner, IconProps } from '@ui-kitten/components';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+// import { useFocusEffect } from '@react-navigation/native';
 
 import { UserCenterScreenProps } from '../types';
 import { pxToDp } from '../constants/Layout';
@@ -26,16 +27,19 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
   const [petInfoList, petInfoDispatch] = useContext(PetContext);
   const [currentIndex, setCurrentIndex] = useState(0);
   useEffect(() => {
-    // dispatch({
-    //   type: 'GET_USER_INFO',
-    // });
-    // petInfoDispatch({
-    //   type: 'GET_PET_INFO',
-    // });
-    console.log('UserCenterScreen userInfo is ' + JSON.stringify(userInfo));
-    console.log('UserCenterScreen petInfoList is ' + JSON.stringify(petInfoList));
+    navigation.addListener('focus', () => {
+      userInfoDispatch({
+        type: 'GET_USER_INFO',
+      });
+      petInfoDispatch({
+        type: 'GET_PET_INFO',
+      });
+      console.log('navigation , focus')
+    });
+    // console.log('UserCenterScreen userInfo is ' + JSON.stringify(userInfo));
+    // console.log('UserCenterScreen petInfoList is ' + JSON.stringify(petInfoList));
     // getUserInfo();
-  }, []);
+  }, [navigation]);
   return (
     <Layout
       style={{
@@ -67,13 +71,15 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
                       key={index}
                       style={
                         currentIndex == index
-                          ? { ...styles.petListItemSelected, ...styles.petListItem,
-                            overflow: 'hidden' }
-                          : { ...styles.petListItem ,
-                            overflow: 'hidden'}
+                          ? { ...styles.petListItemSelected, ...styles.petListItem, overflow: 'hidden' }
+                          : { ...styles.petListItem, overflow: 'hidden' }
                       }
                     >
-                      <CacheImage source={{ uri: item.portraitUrl }} style={{ flex: 1 }}></CacheImage>
+                      {item.portraitUrl ? (
+                        <CacheImage source={{ uri: item.portraitUrl }} style={{ flex: 1 }}></CacheImage>
+                      ) : (
+                        <></>
+                      )}
                     </Layout>
                   </TouchableWithoutFeedback>
                 );
