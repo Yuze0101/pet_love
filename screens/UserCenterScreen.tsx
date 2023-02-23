@@ -46,8 +46,13 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
         paddingBottom: insets.bottom,
       }}
     >
-      <CustomTopNavigation title={userInfo.username} action={() => {}} />
-      {/* <Divider /> */}
+      <CustomTopNavigation
+        title={userInfo.username}
+        showRight={true}
+        rightIconName="settings-outline"
+        rightAction={() => {}}
+      />
+
       <Layout style={{ paddingLeft: pxToDp(24), paddingRight: pxToDp(24) }}>
         <Layout style={styles.petList}>
           {petInfoList.map((item: any, index: number) => {

@@ -107,10 +107,8 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
       console.log('login res : ' + JSON.stringify(res));
       if (res.success) {
         await storage.save({
-          key: 'userInfo',
-          data: {
-            token: res.data.token,
-          },
+          key: 'token',
+          data: res.data.token,
         });
         await userQueryDetailAndSaveData();
         navigation.replace('Root');

@@ -9,5 +9,5 @@ export const queryDetail = (params: {}) => get({ url: '/pet/userInfo/queryDetail
 export const updateUserInfo = (params: {}) => post({ url: '/pet/userInfo/updateUserInfo.json', params });
 export const upload = (params: {}) => post({ url: '/pet/tool/upload.json', params }, 'multipart/form-data');
 export const createPet = (params: {}) => post({ url: '/pet/userInfo/createPet.json', params });
-export const follow_count = (params: {}) => post({ url: '/pet/userInfo/editPet.json', params });
-export const deletePet = (params: {}) => get({ url: ' /pet/userInfo/deletePet.json', params });
+export const editPet = (params: {}) => post({ url: '/pet/userInfo/editPet.json', params });
+export const deletePet = (params: {}) => get({ url: '/pet/userInfo/deletePet.json', params });
