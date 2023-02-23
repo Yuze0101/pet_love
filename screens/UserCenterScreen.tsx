@@ -79,8 +79,8 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
                     <TouchableWithoutFeedback
                       key={'addPetInfo'}
                       onPress={() => {
-                        // navigation.navigate('PetInfo', { id: undefined });
-                        navigation.navigate('Setting');
+                        navigation.navigate('PetInfo', { id: undefined });
+                        // navigation.navigate('Setting');
                       }}
                     >
                       <Layout
