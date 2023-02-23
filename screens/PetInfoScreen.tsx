@@ -11,19 +11,23 @@ import {
   RadioGroup,
   I18nConfig,
   Layout,
+  Modal,
 } from '@ui-kitten/components';
-import { View, Image, TouchableWithoutFeedback, Platform, Keyboard } from 'react-native';
+import { TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import * as ImagePicker from 'expo-image-picker';
+import storage from '../utils/storage';
 
 import { pxToDp } from '../constants/Layout';
 import Colors from '../constants/Colors';
 import { UserCenterScreenProps } from '../types';
 import CatIcon from '../components/CatIcon';
 import DogIcon from '../components/DogIcon';
-import { upload, createPet } from '../api';
+import { upload, createPet, queryDetail } from '../api';
 import { CustomTopNavigation } from '../components/CustomTopNavigation';
+import { CacheImage } from '../components/CacheImage';
+import { CustomModal } from '../components/CustomModal';
 
 const { themeColor } = Colors;
 
@@ -58,23 +62,78 @@ type CreatePetParam = {
   weight: string;
   desc: string;
 };
+const createPetParam: CreatePetParam | any = {};
 export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'PetInfo'>) {
   const insets = useSafeAreaInsets();
 
   const [date, setDate] = useState(new Date());
   const [multilineInputText, setMultilineInputText] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [imageUri, setImageUri] = useState('');
+  const [showModal, setShowModal] = useState(false);
 
   const nameRef = useRef(null);
   const weightRef = useRef(null);
   const descRef = useRef(null);
 
-  const createPetParam: any = {};
+  type CardType = {
+    type: string;
+    fill: string;
+  };
+  const RenderCardList = (props: any) => {
+    const [choosedIndex, setChoosedIndex] = useState(0);
+    return props.list.map((item: CardType, index: number) => {
+      return (
+        <Card
+          status={choosedIndex == index ? 'primary' : 'basic'}
+          onPress={() => {
+            setChoosedIndex(index);
+            createPetParam.type = choosedIndex == 0 ? 'CAT' : 'DOG';
+          }}
+          key={index}
+          style={{ width: pxToDp(100), height: pxToDp(70) }}
+        >
+          <Layout
+            style={{
+              height: '100%',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: pxToDp(5),
+            }}
+          >
+            {item.type != 'other' ? (
+              item.type == 'cat' ? (
+                <CatIcon fill={choosedIndex == index ? themeColor.orange : ''} />
+              ) : (
+                <DogIcon fill={choosedIndex == index ? themeColor.orange : ''} />
+              )
+            ) : null}
+            <Text style={{ marginLeft: pxToDp(5) }}>
+              {item.type != 'other' ? (item.type == 'cat' ? '猫' : '狗') : '其他'}
+            </Text>
+          </Layout>
+        </Card>
+      );
+    });
+  };
 
   const userCreatePet = async () => {
     try {
-      const res = await createPet(createPetParam);
+      console.log('userCreatePet : ' + JSON.stringify(createPetParam));
+      const res = (await createPet(createPetParam)) as any;
       console.log(JSON.stringify(res));
+      if (res.success) {
+        const result = (await queryDetail({})) as any;
+        if (result.success) {
+          const petInfoList: any = result.data.petInfoList;
+          await storage.save({
+            key: 'petData',
+            data: petInfoList,
+          });
+        }
+        navigation.navigate('Main');
+      }
     } catch (error) {
       console.error('Err : ' + error);
     }
@@ -92,7 +151,7 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
     if (!result.canceled) {
       // ImagePicker saves the taken photo to disk and returns a local URI to it
       console.log(JSON.stringify(result));
-
+      setShowModal(true);
       const localUri = result.assets[0].uri;
       const filename = localUri.split('/').pop();
       const match = /\.(\w+)$/.exec(filename as string);
@@ -101,10 +160,15 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
       // @ts-ignore
       formData.append('file', { uri: localUri, name: filename, type });
       console.log(`{localUri : ${localUri} , filename : ${filename} , type : ${type}}`);
-
       try {
-        const res = await upload(formData);
+        const res = (await upload(formData)) as any;
         console.log('upload res : ' + JSON.stringify(res));
+        if (res.success) {
+          console.log(res.data);
+          createPetParam.portraitUrl = res.data;
+          setImageUri(localUri);
+          setShowModal(false);
+        }
       } catch (error) {
         console.error('Err : ' + error);
       }
@@ -119,16 +183,16 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
           flex: 1,
           paddingTop: insets.top,
           paddingBottom: insets.bottom,
-          paddingLeft: pxToDp(24),
-          paddingRight: pxToDp(24),
         }}
       >
-        <CustomTopNavigation title="返回" action={() => navigation.goBack()} />
+        <CustomTopNavigation title="宠物信息" action={() => navigation.goBack()} />
         <Layout
           style={{
             flex: 1,
             alignItems: 'center',
             justifyContent: 'space-between',
+            paddingLeft: pxToDp(24),
+            paddingRight: pxToDp(24),
           }}
         >
           <TouchableWithoutFeedback onPress={() => pickImage()}>
@@ -139,9 +203,10 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
                 backgroundColor: '#cccccc',
                 borderRadius: pxToDp(80),
                 marginBottom: pxToDp(30),
+                overflow: 'hidden',
               }}
             >
-              <Image></Image>
+              {imageUri ? <CacheImage source={{ uri: imageUri }} style={{ flex: 1 }}></CacheImage> : null}
             </Layout>
           </TouchableWithoutFeedback>
           <Input
@@ -248,48 +313,11 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
             完成
           </Button>
         </Layout>
-
+        <Modal backdropStyle={{ backgroundColor: 'rgba(0,0,0,0.3)' }} visible={showModal}>
+          <CustomModal status="primary" isLoading={true} text="123"></CustomModal>
+        </Modal>
         <StatusBar style={'auto'} />
       </Layout>
     </TouchableWithoutFeedback>
   );
 }
-
-type CardType = {
-  type: string;
-  fill: string;
-};
-const RenderCardList = (props: any) => {
-  const [choosedIndex, setChoosedIndex] = useState(0);
-  return props.list.map((item: CardType, index: number) => {
-    return (
-      <Card
-        status={choosedIndex == index ? 'primary' : 'basic'}
-        onPress={() => setChoosedIndex(index)}
-        key={index}
-        style={{ width: pxToDp(100), height: pxToDp(70) }}
-      >
-        <View
-          style={{
-            height: '100%',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: pxToDp(5),
-          }}
-        >
-          {item.type != 'other' ? (
-            item.type == 'cat' ? (
-              <CatIcon fill={choosedIndex == index ? themeColor.orange : ''} />
-            ) : (
-              <DogIcon fill={choosedIndex == index ? themeColor.orange : ''} />
-            )
-          ) : null}
-          <Text style={{ marginLeft: pxToDp(5) }}>
-            {item.type != 'other' ? (item.type == 'cat' ? '猫' : '狗') : '其他'}
-          </Text>
-        </View>
-      </Card>
-    );
-  });
-};

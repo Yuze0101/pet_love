@@ -4,20 +4,20 @@ import { Image, ImageStyle } from 'react-native';
 
 type CacheImageProps = {
   source: { uri: string };
-  cacheKey: string;
-  style: ImageStyle;
+  style?: ImageStyle;
 };
 
-export default function CacheImage(props: CacheImageProps) {
+export function CacheImage(props: CacheImageProps) {
   const [imgUri, setImgUri] = useState('');
   useEffect(() => {
     async function loadImg() {
       let imgXt = getImgXtension(props.source.uri);
+      console.log('imgXt is ' + imgXt);
       if (!imgXt || !imgXt.length) {
         console.log('Couldn`t load Image');
         return;
       }
-      const cacheFileUri = `${FileSystem.cacheDirectory}${props.cacheKey}.${imgXt[0]}`;
+      const cacheFileUri = `${FileSystem.cacheDirectory}${props.source.uri.split('/').pop()}.${imgXt[0]}`;
       const imgXistsInCache = await findImageInCache(cacheFileUri);
       if (imgXistsInCache.exists) {
         setImgUri(cacheFileUri);

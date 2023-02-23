@@ -88,7 +88,7 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
             </Layout>
             <Layout style={styles.topInfoRight}>
               {petInfoList.length > 0 ? <Button>{'新增宠物'}</Button> : null}
-              <TouchableWithoutFeedback onPress={()=> navigation.navigate('Setting')}>
+              <TouchableWithoutFeedback onPress={() => navigation.navigate('Setting')}>
                 <Image source={require('../assets/images/setting.png')} style={styles.topInfoRightIcon} />
               </TouchableWithoutFeedback>
             </Layout>
@@ -99,6 +99,7 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
                 {petInfoList.map((item: any, index: number) => {
                   return (
                     <TouchableWithoutFeedback
+                      key={index}
                       onPress={() => {
                         let newPetInfoList: any = petInfoList;
                         newPetInfoList[currentIndex].active = false;
@@ -108,6 +109,7 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
                       }}
                     >
                       <Image
+                        key={index}
                         source={{ uri: item.portraitUrl }}
                         style={
                           item.active
@@ -143,13 +145,18 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
             </>
           ) : (
             <>
-            <Button style={{
-                marginTop: pxToDp(100),
-                marginBottom: pxToDp(100),
-                width: pxToDp(300),
-                height: pxToDp(50),
-
-            }} onPress={()=> navigation.navigate('PetInfo')}>{"新增宠物"}</Button></>
+              <Button
+                style={{
+                  marginTop: pxToDp(100),
+                  marginBottom: pxToDp(100),
+                  width: pxToDp(300),
+                  height: pxToDp(50),
+                }}
+                onPress={() => navigation.navigate('PetInfo')}
+              >
+                {'新增宠物'}
+              </Button>
+            </>
           )}
           <Layout style={styles.petData}>
             <Layout style={styles.petDataItem}>

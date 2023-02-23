@@ -79,8 +79,6 @@ function BottomTabNavigator() {
         tabBarActiveTintColor: themeColor.orange,
         tabBarShowLabel: false,
         tabBarHideOnKeyboard:true,
-        tabBarHideOnKeyboard: true,
-
       }}
     >
       <BottomTab.Screen
