@@ -11,7 +11,7 @@ type Props = {};
 
 export default function UserCenterNavigator({}: Props) {
   return (
-    <Stack.Navigator initialRouteName='Main'>
+    <Stack.Navigator initialRouteName='PetInfo'>
       <Stack.Screen name="Main" component={UserCenterScreen} options={{ headerShown: false }} />
       <Stack.Screen name="PetInfo" component={PetInfoScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Setting" component={SettingScreen} options={{ headerShown: false }} />

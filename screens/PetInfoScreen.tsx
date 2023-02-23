@@ -12,7 +12,7 @@ import {
   I18nConfig,
   Layout,
 } from '@ui-kitten/components';
-import { View, Image, TouchableWithoutFeedback, Platform, Keyboard } from 'react-native';
+import { TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import * as ImagePicker from 'expo-image-picker';
@@ -24,6 +24,7 @@ import CatIcon from '../components/CatIcon';
 import DogIcon from '../components/DogIcon';
 import { upload, createPet } from '../api';
 import { CustomTopNavigation } from '../components/CustomTopNavigation';
+import { CacheImage } from '../components/CacheImage';
 
 const { themeColor } = Colors;
 
@@ -64,6 +65,7 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
   const [date, setDate] = useState(new Date());
   const [multilineInputText, setMultilineInputText] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [imageUri, setImageUri] = useState('');
 
   const nameRef = useRef(null);
   const weightRef = useRef(null);
@@ -101,10 +103,13 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
       // @ts-ignore
       formData.append('file', { uri: localUri, name: filename, type });
       console.log(`{localUri : ${localUri} , filename : ${filename} , type : ${type}}`);
-
       try {
-        const res = await upload(formData);
+        const res = (await upload(formData)) as any;
         console.log('upload res : ' + JSON.stringify(res));
+        if (res.success) {
+          console.log(res.data);
+          setImageUri(res.data);
+        }
       } catch (error) {
         console.error('Err : ' + error);
       }
@@ -119,16 +124,16 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
           flex: 1,
           paddingTop: insets.top,
           paddingBottom: insets.bottom,
-          paddingLeft: pxToDp(24),
-          paddingRight: pxToDp(24),
         }}
       >
-        <CustomTopNavigation title="返回" action={() => navigation.goBack()} />
+        <CustomTopNavigation title="宠物信息" action={() => navigation.goBack()} />
         <Layout
           style={{
             flex: 1,
             alignItems: 'center',
             justifyContent: 'space-between',
+            paddingLeft: pxToDp(24),
+            paddingRight: pxToDp(24),
           }}
         >
           <TouchableWithoutFeedback onPress={() => pickImage()}>
@@ -139,9 +144,15 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
                 backgroundColor: '#cccccc',
                 borderRadius: pxToDp(80),
                 marginBottom: pxToDp(30),
+                overflow: 'hidden',
               }}
             >
-              <Image></Image>
+              {imageUri ? (
+                <CacheImage
+                  source={{ uri: imageUri }}
+                  style={{ flex: 1 }}
+                ></CacheImage>
+              ) : null}
             </Layout>
           </TouchableWithoutFeedback>
           <Input
@@ -269,7 +280,7 @@ const RenderCardList = (props: any) => {
         key={index}
         style={{ width: pxToDp(100), height: pxToDp(70) }}
       >
-        <View
+        <Layout
           style={{
             height: '100%',
             flexDirection: 'row',
@@ -288,7 +299,7 @@ const RenderCardList = (props: any) => {
           <Text style={{ marginLeft: pxToDp(5) }}>
             {item.type != 'other' ? (item.type == 'cat' ? '猫' : '狗') : '其他'}
           </Text>
-        </View>
+        </Layout>
       </Card>
     );
   });
