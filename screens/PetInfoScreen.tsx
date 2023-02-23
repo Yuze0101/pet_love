@@ -17,13 +17,14 @@ import { TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import * as ImagePicker from 'expo-image-picker';
+import storage from '../utils/storage';
 
 import { pxToDp } from '../constants/Layout';
 import Colors from '../constants/Colors';
 import { UserCenterScreenProps } from '../types';
 import CatIcon from '../components/CatIcon';
 import DogIcon from '../components/DogIcon';
-import { upload, createPet } from '../api';
+import { upload, createPet, queryDetail } from '../api';
 import { CustomTopNavigation } from '../components/CustomTopNavigation';
 import { CacheImage } from '../components/CacheImage';
 import { CustomModal } from '../components/CustomModal';
@@ -120,8 +121,19 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
   const userCreatePet = async () => {
     try {
       console.log('userCreatePet : ' + JSON.stringify(createPetParam));
-      const res = await createPet(createPetParam);
+      const res = (await createPet(createPetParam)) as any;
       console.log(JSON.stringify(res));
+      if (res.success) {
+        const result = (await queryDetail({})) as any;
+        if (result.success) {
+          const petInfoList: any = result.data.petInfoList;
+          await storage.save({
+            key: 'petData',
+            data: petInfoList,
+          });
+        }
+        navigation.navigate('Main');
+      }
     } catch (error) {
       console.error('Err : ' + error);
     }
@@ -154,7 +166,7 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
         if (res.success) {
           console.log(res.data);
           createPetParam.portraitUrl = res.data;
-          setImageUri(res.data);
+          setImageUri(localUri);
           setShowModal(false);
         }
       } catch (error) {
