@@ -34,7 +34,7 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
       petInfoDispatch({
         type: 'GET_PET_INFO',
       });
-      console.log('navigation , focus')
+      console.log('navigation , focus');
     });
     // console.log('UserCenterScreen userInfo is ' + JSON.stringify(userInfo));
     // console.log('UserCenterScreen petInfoList is ' + JSON.stringify(petInfoList));
@@ -57,7 +57,7 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
 
       <Layout style={{ paddingLeft: pxToDp(24), paddingRight: pxToDp(24) }}>
         <Layout style={styles.petList}>
-          {petInfoList ? (
+          {petInfoList != null && petInfoList.length > 0 ? (
             <>
               {petInfoList.map((item: any, index: number) => {
                 return (
@@ -142,18 +142,20 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
             </>
           )}
         </Layout>
-        {petInfoList ? (
+        {petInfoList.length > 0 ? (
           <>
             <Layout style={styles.petInfo}>
               <Layout style={styles.petInfoLeft}>
-                <Text category="h2">{petInfoList[currentIndex].name ? petInfoList[currentIndex].name : '未命名'}</Text>
+                <Text category="h2">
+                  {petInfoList[currentIndex]?.name ? petInfoList[currentIndex]?.name : '未命名'}
+                </Text>
                 <Text category="s1">
-                  {petInfoList[currentIndex].desc ? petInfoList[currentIndex].desc : '无描述信息'}
+                  {petInfoList[currentIndex]?.desc ? petInfoList[currentIndex]?.desc : '无描述信息'}
                 </Text>
               </Layout>
               <TouchableWithoutFeedback
                 onPress={() => {
-                  navigation.navigate('PetInfo', { id: petInfoList[currentIndex].id });
+                  navigation.navigate('PetInfo', { id: petInfoList[currentIndex]?.id });
                 }}
               >
                 <Icon
@@ -166,15 +168,15 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
             <Layout style={styles.petInfo}>
               <Layout style={styles.petInfoItem}>
                 <Text style={styles.petInfoItemTitle}>{'年龄'}</Text>
-                <Text style={styles.petInfoItemDesc}>{petInfoList[currentIndex].age}</Text>
+                <Text style={styles.petInfoItemDesc}>{petInfoList[currentIndex]?.age}</Text>
               </Layout>
               <Layout style={styles.petInfoItem}>
                 <Text style={styles.petInfoItemTitle}>{'性别'}</Text>
-                <Text style={styles.petInfoItemDesc}>{petInfoList[currentIndex].gender == 'MALE' ? '公' : '母'}</Text>
+                <Text style={styles.petInfoItemDesc}>{petInfoList[currentIndex]?.gender == 'MALE' ? '公' : '母'}</Text>
               </Layout>
               <Layout style={styles.petInfoItem}>
                 <Text style={styles.petInfoItemTitle}>{'体重(kg)'}</Text>
-                <Text style={styles.petInfoItemDesc}>{petInfoList[currentIndex].weight}</Text>
+                <Text style={styles.petInfoItemDesc}>{petInfoList[currentIndex]?.weight}</Text>
               </Layout>
             </Layout>
           </>
@@ -184,19 +186,25 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
 
         <Layout style={styles.petData}>
           <Layout style={styles.petDataItem}>
-            <Text style={styles.petDataItemTitle}>{petInfoList ? petInfoList[currentIndex].cardCount : 0}</Text>
+            <Text style={styles.petDataItemTitle}>
+              {petInfoList.length > 0 ? petInfoList[currentIndex]?.cardCount : 0}
+            </Text>
             <Text style={styles.petDataItemDesc}>{'动态'}</Text>
           </Layout>
           <Layout style={styles.petDataItem}>
-            <Text style={styles.petDataItemTitle}>{petInfoList ? petInfoList[currentIndex].fansCount : 0}</Text>
+            <Text style={styles.petDataItemTitle}>
+              {petInfoList.length > 0 ? petInfoList[currentIndex]?.fansCount : 0}
+            </Text>
             <Text style={styles.petDataItemDesc}>{'关注'}</Text>
           </Layout>
           <Layout style={styles.petDataItem}>
-            <Text style={styles.petDataItemTitle}>{petInfoList ? petInfoList[currentIndex].fansCount : 0}</Text>
+            <Text style={styles.petDataItemTitle}>
+              {petInfoList.length > 0 ? petInfoList[currentIndex]?.fansCount : 0}
+            </Text>
             <Text style={styles.petDataItemDesc}>{'粉丝'}</Text>
           </Layout>
         </Layout>
-        {petInfoList ? (
+        {petInfoList.length > 0 ? (
           <>
             <Text style={styles.cardListTitle}>{'动态'}</Text>
             <Layout style={styles.cardList}>

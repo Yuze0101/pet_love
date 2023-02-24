@@ -13,7 +13,7 @@ import {
   Layout,
   Modal,
 } from '@ui-kitten/components';
-import { TouchableWithoutFeedback, Keyboard, Image } from 'react-native';
+import { TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import * as ImagePicker from 'expo-image-picker';
@@ -26,10 +26,11 @@ import CatIcon from '../components/CatIcon';
 import DogIcon from '../components/DogIcon';
 import { upload, createPet, queryDetail, editPet, deletePet } from '../api';
 import { CustomTopNavigation } from '../components/CustomTopNavigation';
-// import { CacheImage } from '../components/CacheImage';
+import { CacheImage } from '../components/CacheImage';
 import { CustomModal, CustomModalStatus } from '../components/CustomModal';
 import { PetContext } from '../contexts/PetContext';
 import { UserContext } from '../contexts/UserContext';
+import { userQueryDetailAndSaveData } from '../utils/queryDetailAndSaveData';
 
 const { themeColor } = Colors;
 
@@ -68,7 +69,7 @@ export default function AnimalInfoScreen({ navigation, route }: UserCenterScreen
   const [petState, _dispatch] = useContext(PetContext);
   const [userState, _dispatch2] = useContext(UserContext);
 
-  const [imageUri, setImageUri] = useState('');
+  const [imageUri, setImageUri] = useState();
   const [showModal, setShowModal] = useState(false);
 
   const nameRef = useRef(null);
@@ -103,6 +104,8 @@ export default function AnimalInfoScreen({ navigation, route }: UserCenterScreen
           setWeight(item.weight);
           setGender(item.gender == 'MALE' ? 0 : 1);
           setDesc(item.desc);
+          console.log('PetInfoScheen  : ' + item.portraitUrl);
+          // @ts-ignore
           setImageUri(item.portraitUrl);
           setIsEdit(true);
         }
@@ -172,14 +175,7 @@ export default function AnimalInfoScreen({ navigation, route }: UserCenterScreen
       const res = (await createPet(createPetParam)) as any;
       console.log(JSON.stringify(res));
       if (res.success) {
-        const result = (await queryDetail({})) as any;
-        if (result.success) {
-          const petInfoList: any = result.data.petInfoList;
-          await storage.save({
-            key: 'petData',
-            data: petInfoList,
-          });
-        }
+        await userQueryDetailAndSaveData()
         navigation.navigate('Main');
       }
     } catch (error) {
@@ -210,15 +206,7 @@ export default function AnimalInfoScreen({ navigation, route }: UserCenterScreen
       const res = (await editPet(createPetParam)) as any;
       console.log(JSON.stringify('userEditPet res: ' + JSON.stringify(res)));
       if (res.success) {
-        const result = (await queryDetail({})) as any;
-        if (result.success) {
-          const petInfoList: any = result.data.petInfoList;
-          console.log('petInfoList ' + JSON.stringify(petInfoList));
-          await storage.save({
-            key: 'petInfoList',
-            data: petInfoList,
-          });
-        }
+        await userQueryDetailAndSaveData()
         navigation.navigate('Main');
       }
     } catch (error) {
@@ -236,6 +224,7 @@ export default function AnimalInfoScreen({ navigation, route }: UserCenterScreen
     try {
       const res = await deletePet({ id });
       console.log('userDeletePet res : ' + JSON.stringify(res));
+      await userQueryDetailAndSaveData()
       navigation.navigate('Main');
       setShowModal(false);
     } catch (error) {
@@ -271,6 +260,7 @@ export default function AnimalInfoScreen({ navigation, route }: UserCenterScreen
         if (res.success) {
           console.log(res.data);
           setFileUri(res.data);
+          // @ts-ignore
           setImageUri(localUri);
           setShowModal(false);
         }
@@ -325,7 +315,7 @@ export default function AnimalInfoScreen({ navigation, route }: UserCenterScreen
                 overflow: 'hidden',
               }}
             >
-              {imageUri ? <Image source={{ uri: imageUri }} style={{ flex: 1 }}></Image> : null}
+              {imageUri ? <CacheImage source={{ uri: imageUri }} style={{ flex: 1 }}></CacheImage> : null}
             </Layout>
           </TouchableWithoutFeedback>
           <Input

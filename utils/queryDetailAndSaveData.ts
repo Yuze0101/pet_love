@@ -10,7 +10,7 @@ export const userQueryDetailAndSaveData = async () => {
     });
     await storage.save({
       key: 'petInfoList',
-      data: res.data?.petInfoList ?? [],
+      data: res.data?.petInfoList,
     });
   }
 };

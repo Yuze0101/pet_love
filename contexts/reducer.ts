@@ -42,7 +42,11 @@ export const reducer = async (state: any, action: Actions) => {
             reject(error);
           });
       });
-      console.log('reducer return : ' + JSON.stringify([...petInfoList]));
-      return [...petInfoList];
+      console.log('reducer return : ' + JSON.stringify(petInfoList));
+      if (petInfoList == null) {
+        return [];
+      } else {
+        return [...petInfoList];
+      }
   }
 };
