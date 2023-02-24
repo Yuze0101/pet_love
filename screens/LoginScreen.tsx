@@ -165,7 +165,7 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
             }}
           />
           <Input
-            placeholder="新的密码"
+            placeholder="密码"
             size={'large'}
             placeholderTextColor={'#361D1E50'}
             // @ts-ignore
@@ -173,7 +173,7 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
             accessoryRight={renderIcon}
             style={{ marginTop: pxToDp(16) }}
             secureTextEntry={secureTextEntry}
-            textContentType={'newPassword'}
+            textContentType={'password'}
             returnKeyType={'next'}
             onChangeText={password => {
               userLoginParams.password = password;
