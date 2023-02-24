@@ -11,9 +11,9 @@ import {
   RadioGroup,
   I18nConfig,
   Layout,
-  Modal,
 } from '@ui-kitten/components';
 import { TouchableWithoutFeedback, Keyboard } from 'react-native';
+import Modal from 'react-native-modal';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import * as ImagePicker from 'expo-image-picker';
@@ -175,7 +175,7 @@ export default function AnimalInfoScreen({ navigation, route }: UserCenterScreen
       const res = (await createPet(createPetParam)) as any;
       console.log(JSON.stringify(res));
       if (res.success) {
-        await userQueryDetailAndSaveData()
+        await userQueryDetailAndSaveData();
         navigation.navigate('Main');
       }
     } catch (error) {
@@ -206,7 +206,7 @@ export default function AnimalInfoScreen({ navigation, route }: UserCenterScreen
       const res = (await editPet(createPetParam)) as any;
       console.log(JSON.stringify('userEditPet res: ' + JSON.stringify(res)));
       if (res.success) {
-        await userQueryDetailAndSaveData()
+        await userQueryDetailAndSaveData();
         navigation.navigate('Main');
       }
     } catch (error) {
@@ -224,7 +224,7 @@ export default function AnimalInfoScreen({ navigation, route }: UserCenterScreen
     try {
       const res = await deletePet({ id });
       console.log('userDeletePet res : ' + JSON.stringify(res));
-      await userQueryDetailAndSaveData()
+      await userQueryDetailAndSaveData();
       navigation.navigate('Main');
       setShowModal(false);
     } catch (error) {
@@ -422,7 +422,7 @@ export default function AnimalInfoScreen({ navigation, route }: UserCenterScreen
             完成
           </Button>
         </Layout>
-        <Modal backdropStyle={{ backgroundColor: 'rgba(0,0,0,0.3)' }} visible={showModal}>
+        <Modal style={{ margin: 0 }} isVisible={showModal}>
           <CustomModal
             status={modalState as CustomModalStatus}
             isLoading={isLoading}
