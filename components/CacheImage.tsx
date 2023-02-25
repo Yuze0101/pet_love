@@ -8,22 +8,29 @@ type CacheImageProps = {
 };
 
 export function CacheImage(props: CacheImageProps) {
-  const [imgUri, setImgUri] = useState('');
+  const [imgUri, setImgUri] = useState();
   useEffect(() => {
     async function loadImg() {
+      if (/file:\/\//.test(props.source.uri)) {
+        console.log('local Image already exist');
+        // @ts-ignore
+        setImgUri(props.source.uri);
+        return;
+      }
       let imgXt = getImgXtension(props.source.uri);
-      console.log('imgXt is ' + imgXt);
       if (!imgXt || !imgXt.length) {
         console.log('Couldn`t load Image');
         return;
       }
-      const cacheFileUri = `${FileSystem.cacheDirectory}${props.source.uri.split('/').pop()}.${imgXt[0]}`;
+      const cacheFileUri = `${FileSystem.cacheDirectory}${props.source.uri.split('/').pop()}`;
       const imgXistsInCache = await findImageInCache(cacheFileUri);
       if (imgXistsInCache.exists) {
+        // @ts-ignore
         setImgUri(cacheFileUri);
       } else {
         const cached = await cacheImage(props.source.uri, cacheFileUri);
         if (cached.isCached) {
+          // @ts-ignore
           setImgUri(cached.path as string);
         } else {
           console.log('load image error');
@@ -31,7 +38,7 @@ export function CacheImage(props: CacheImageProps) {
       }
     }
     loadImg();
-  }, []);
+  }, [props.source.uri]);
 
   return <Image source={{ uri: imgUri }} style={props.style} />;
 }

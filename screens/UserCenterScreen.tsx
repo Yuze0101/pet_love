@@ -1,7 +1,8 @@
-import { StyleSheet, Image, TouchableWithoutFeedback } from 'react-native';
-import { useEffect, useState, useContext } from 'react';
+import { StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import { useEffect, useState, useContext, useCallback } from 'react';
 import { Text, Layout, Button, Divider, Input, Icon, Spinner, IconProps } from '@ui-kitten/components';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+// import { useFocusEffect } from '@react-navigation/native';
 
 import { UserCenterScreenProps } from '../types';
 import { pxToDp } from '../constants/Layout';
@@ -26,16 +27,19 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
   const [petInfoList, petInfoDispatch] = useContext(PetContext);
   const [currentIndex, setCurrentIndex] = useState(0);
   useEffect(() => {
-    // dispatch({
-    //   type: 'GET_USER_INFO',
-    // });
-    // petInfoDispatch({
-    //   type: 'GET_PET_INFO',
-    // });
-    console.log('UserCenterScreen userInfo is ' + JSON.stringify(userInfo));
-    console.log('UserCenterScreen petInfoList is ' + JSON.stringify(petInfoList));
+    navigation.addListener('focus', () => {
+      userInfoDispatch({
+        type: 'GET_USER_INFO',
+      });
+      petInfoDispatch({
+        type: 'GET_PET_INFO',
+      });
+      console.log('navigation , focus');
+    });
+    // console.log('UserCenterScreen userInfo is ' + JSON.stringify(userInfo));
+    // console.log('UserCenterScreen petInfoList is ' + JSON.stringify(petInfoList));
     // getUserInfo();
-  }, []);
+  }, [navigation]);
   return (
     <Layout
       style={{
@@ -44,11 +48,16 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
         paddingBottom: insets.bottom,
       }}
     >
-      <CustomTopNavigation title={userInfo.username} action={() => {}} />
-      {/* <Divider /> */}
+      <CustomTopNavigation
+        title={userInfo.username}
+        showRight={true}
+        rightIconName="settings-outline"
+        rightAction={() => {}}
+      />
+
       <Layout style={{ paddingLeft: pxToDp(24), paddingRight: pxToDp(24) }}>
         <Layout style={styles.petList}>
-          {petInfoList ? (
+          {petInfoList != null && petInfoList.length > 0 ? (
             <>
               {petInfoList.map((item: any, index: number) => {
                 return (
@@ -62,13 +71,15 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
                       key={index}
                       style={
                         currentIndex == index
-                          ? { ...styles.petListItemSelected, ...styles.petListItem,
-                            overflow: 'hidden' }
-                          : { ...styles.petListItem ,
-                            overflow: 'hidden'}
+                          ? { ...styles.petListItemSelected, ...styles.petListItem, overflow: 'hidden' }
+                          : { ...styles.petListItem, overflow: 'hidden' }
                       }
                     >
-                      <CacheImage source={{ uri: item.portraitUrl }} style={{ flex: 1 }}></CacheImage>
+                      {item.portraitUrl ? (
+                        <CacheImage source={{ uri: item.portraitUrl }} style={{ flex: 1 }}></CacheImage>
+                      ) : (
+                        <></>
+                      )}
                     </Layout>
                   </TouchableWithoutFeedback>
                 );
@@ -131,18 +142,20 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
             </>
           )}
         </Layout>
-        {petInfoList ? (
+        {petInfoList.length > 0 ? (
           <>
             <Layout style={styles.petInfo}>
               <Layout style={styles.petInfoLeft}>
-                <Text category="h2">{petInfoList[currentIndex].name ? petInfoList[currentIndex].name : '未命名'}</Text>
+                <Text category="h2">
+                  {petInfoList[currentIndex]?.name ? petInfoList[currentIndex]?.name : '未命名'}
+                </Text>
                 <Text category="s1">
-                  {petInfoList[currentIndex].desc ? petInfoList[currentIndex].desc : '无描述信息'}
+                  {petInfoList[currentIndex]?.desc ? petInfoList[currentIndex]?.desc : '无描述信息'}
                 </Text>
               </Layout>
               <TouchableWithoutFeedback
                 onPress={() => {
-                  navigation.navigate('PetInfo', { id: petInfoList[currentIndex].id });
+                  navigation.navigate('PetInfo', { id: petInfoList[currentIndex]?.id });
                 }}
               >
                 <Icon
@@ -155,15 +168,15 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
             <Layout style={styles.petInfo}>
               <Layout style={styles.petInfoItem}>
                 <Text style={styles.petInfoItemTitle}>{'年龄'}</Text>
-                <Text style={styles.petInfoItemDesc}>{petInfoList[currentIndex].age}</Text>
+                <Text style={styles.petInfoItemDesc}>{petInfoList[currentIndex]?.age}</Text>
               </Layout>
               <Layout style={styles.petInfoItem}>
                 <Text style={styles.petInfoItemTitle}>{'性别'}</Text>
-                <Text style={styles.petInfoItemDesc}>{petInfoList[currentIndex].gender == 'MALE' ? '公' : '母'}</Text>
+                <Text style={styles.petInfoItemDesc}>{petInfoList[currentIndex]?.gender == 'MALE' ? '公' : '母'}</Text>
               </Layout>
               <Layout style={styles.petInfoItem}>
                 <Text style={styles.petInfoItemTitle}>{'体重(kg)'}</Text>
-                <Text style={styles.petInfoItemDesc}>{petInfoList[currentIndex].weight}</Text>
+                <Text style={styles.petInfoItemDesc}>{petInfoList[currentIndex]?.weight}</Text>
               </Layout>
             </Layout>
           </>
@@ -173,19 +186,25 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
 
         <Layout style={styles.petData}>
           <Layout style={styles.petDataItem}>
-            <Text style={styles.petDataItemTitle}>{petInfoList ? petInfoList[currentIndex].cardCount : 0}</Text>
+            <Text style={styles.petDataItemTitle}>
+              {petInfoList.length > 0 ? petInfoList[currentIndex]?.cardCount : 0}
+            </Text>
             <Text style={styles.petDataItemDesc}>{'动态'}</Text>
           </Layout>
           <Layout style={styles.petDataItem}>
-            <Text style={styles.petDataItemTitle}>{petInfoList ? petInfoList[currentIndex].fansCount : 0}</Text>
+            <Text style={styles.petDataItemTitle}>
+              {petInfoList.length > 0 ? petInfoList[currentIndex]?.fansCount : 0}
+            </Text>
             <Text style={styles.petDataItemDesc}>{'关注'}</Text>
           </Layout>
           <Layout style={styles.petDataItem}>
-            <Text style={styles.petDataItemTitle}>{petInfoList ? petInfoList[currentIndex].fansCount : 0}</Text>
+            <Text style={styles.petDataItemTitle}>
+              {petInfoList.length > 0 ? petInfoList[currentIndex]?.fansCount : 0}
+            </Text>
             <Text style={styles.petDataItemDesc}>{'粉丝'}</Text>
           </Layout>
         </Layout>
-        {petInfoList ? (
+        {petInfoList.length > 0 ? (
           <>
             <Text style={styles.cardListTitle}>{'动态'}</Text>
             <Layout style={styles.cardList}>

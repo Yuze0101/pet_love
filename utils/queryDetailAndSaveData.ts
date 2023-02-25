@@ -2,14 +2,15 @@ import { queryDetail } from '../api';
 import storage from './storage';
 export const userQueryDetailAndSaveData = async () => {
   const res = (await queryDetail({})) as any;
+  console.log('userQueryDetailAndSaveData is ' + JSON.stringify(res));
   if (res.success) {
-    storage.save({
+    await storage.save({
       key: 'userInfo',
       data: res.data.userInfo,
     });
-    storage.save({
+    await storage.save({
       key: 'petInfoList',
-      data: res.data?.petInfoList ?? [],
+      data: res.data?.petInfoList,
     });
   }
 };

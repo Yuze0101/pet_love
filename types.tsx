@@ -57,13 +57,15 @@ export type UserCenterScreenProps<Screen extends keyof UserCenterParamList> = Na
 
 export enum ActioinType {
   getUserInfo = 'GET_USER_INFO',
+  setUserInfo = 'SET_USER_INFO',
   getPetInfo = 'GET_PET_INFO',
+  setPetInfo = 'SET_PET_INFO',
 }
 export type Actions = {
   type: ActioinType;
 };
 export type Pet = {
-  id?: number;
+  id: number;
   name: string;
   portraitUrl: string;
   age: number;

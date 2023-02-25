@@ -13,20 +13,21 @@ type HttpsProps = {
 
 export const get = async (props: HttpsProps) => {
   const paramsArray: string[] = [];
+  // if (headers.Token == '') {
   await storage
     .load({
-      key: 'userInfo',
+      key: 'token',
     })
     .then(value => {
-      console.log('Storage load token to get : ' + value.token);
-      headers.Token = value.token;
+      console.log('Storage load token to get : ' + value);
+      headers.Token = value;
       // @ts-ignore
       // props.params.token = value.token;
     })
     .catch(error => {
       console.log('Err: ' + error);
     });
-
+  // }
   Object.keys(props.params).forEach(key => {
     // @ts-ignore
     if (key) paramsArray.push(key + '=' + props.params[key]);
@@ -47,19 +48,21 @@ export const get = async (props: HttpsProps) => {
   });
 };
 export const post = async (props: HttpsProps, customContentType?: string) => {
+  // if (headers.Token == '') {
   await storage
     .load({
-      key: 'userInfo',
+      key: 'token',
     })
     .then(value => {
-      console.log('Storage load token to post : ' + value.token);
-      headers.Token = value.token;
+      console.log('Storage load token to get : ' + value);
+      headers.Token = value;
       // @ts-ignore
       // props.params.token = value.token;
     })
     .catch(error => {
       console.log('Err: ' + error);
     });
+  // }
   console.log('customContentType : ' + customContentType);
   if (customContentType) {
     headers['Content-Type'] = customContentType;

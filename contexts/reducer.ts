@@ -22,6 +22,12 @@ export const reducer = async (state: any, action: Actions) => {
       return {
         ...userInfo,
       };
+    case ActioinType.setUserInfo:
+      // await storage.save({
+      //   key: 'userInfo',
+      //   data: action.data,
+      // });
+      break;
     case ActioinType.getPetInfo:
       const petInfoList: Pet[] = await new Promise((resolve, reject) => {
         storage
@@ -36,6 +42,11 @@ export const reducer = async (state: any, action: Actions) => {
             reject(error);
           });
       });
-      return [...petInfoList];
+      console.log('reducer return : ' + JSON.stringify(petInfoList));
+      if (petInfoList == null) {
+        return [];
+      } else {
+        return [...petInfoList];
+      }
   }
 };

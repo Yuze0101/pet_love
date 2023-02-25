@@ -107,10 +107,8 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
       console.log('login res : ' + JSON.stringify(res));
       if (res.success) {
         await storage.save({
-          key: 'userInfo',
-          data: {
-            token: res.data.token,
-          },
+          key: 'token',
+          data: res.data.token,
         });
         await userQueryDetailAndSaveData();
         navigation.replace('Root');
@@ -167,7 +165,7 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
             }}
           />
           <Input
-            placeholder="新的密码"
+            placeholder="密码"
             size={'large'}
             placeholderTextColor={'#361D1E50'}
             // @ts-ignore
@@ -175,7 +173,7 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<'Login'
             accessoryRight={renderIcon}
             style={{ marginTop: pxToDp(16) }}
             secureTextEntry={secureTextEntry}
-            textContentType={'newPassword'}
+            textContentType={'password'}
             returnKeyType={'next'}
             onChangeText={password => {
               userLoginParams.password = password;

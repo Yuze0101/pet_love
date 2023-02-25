@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect, useContext } from 'react';
 import {
   Input,
   Button,
@@ -11,9 +11,9 @@ import {
   RadioGroup,
   I18nConfig,
   Layout,
-  Modal,
 } from '@ui-kitten/components';
 import { TouchableWithoutFeedback, Keyboard } from 'react-native';
+import Modal from 'react-native-modal';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import * as ImagePicker from 'expo-image-picker';
@@ -21,13 +21,16 @@ import storage from '../utils/storage';
 
 import { pxToDp } from '../constants/Layout';
 import Colors from '../constants/Colors';
-import { UserCenterScreenProps } from '../types';
+import { UserCenterScreenProps, Pet } from '../types';
 import CatIcon from '../components/CatIcon';
 import DogIcon from '../components/DogIcon';
-import { upload, createPet, queryDetail } from '../api';
+import { upload, createPet, queryDetail, editPet, deletePet } from '../api';
 import { CustomTopNavigation } from '../components/CustomTopNavigation';
 import { CacheImage } from '../components/CacheImage';
-import { CustomModal } from '../components/CustomModal';
+import { CustomModal, CustomModalStatus } from '../components/CustomModal';
+import { PetContext } from '../contexts/PetContext';
+import { UserContext } from '../contexts/UserContext';
+import { userQueryDetailAndSaveData } from '../utils/queryDetailAndSaveData';
 
 const { themeColor } = Colors;
 
@@ -55,40 +58,71 @@ const localeDateService = new NativeDateService('cn', { i18n, startDayOfWeek: 1 
 type CreatePetParam = {
   name: string;
   portraitUrl: string;
-  age: number;
   birthday: Date;
   gender: 'MALE' | 'FEMALE';
   type: 'CAT' | 'DOG' | 'OTHER';
   weight: string;
   desc: string;
 };
-const createPetParam: CreatePetParam | any = {};
-export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'PetInfo'>) {
+export default function AnimalInfoScreen({ navigation, route }: UserCenterScreenProps<'PetInfo'>) {
   const insets = useSafeAreaInsets();
+  const [petState, _dispatch] = useContext(PetContext);
+  const [userState, _dispatch2] = useContext(UserContext);
 
-  const [date, setDate] = useState(new Date());
-  const [multilineInputText, setMultilineInputText] = useState('');
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [imageUri, setImageUri] = useState('');
+  const [imageUri, setImageUri] = useState();
   const [showModal, setShowModal] = useState(false);
 
   const nameRef = useRef(null);
   const weightRef = useRef(null);
   const descRef = useRef(null);
 
+  // 表单
+  const [name, setName] = useState('');
+  const [date, setDate] = useState(new Date());
+  const [weight, setWeight] = useState('');
+  const [gender, setGender] = useState(0);
+  const [desc, setDesc] = useState('');
+  const [choosedIndex, setChoosedIndex] = useState(0);
+  const [id, setId] = useState(-1);
+  const [isEdit, setIsEdit] = useState(false);
+  const [fileUri, setFileUri] = useState('');
+
+  // Modal
+  const [modalState, setModalState] = useState('primary');
+  const [isLoading, setIsLoading] = useState(true);
+  const [modalTitle, setModalTitle] = useState('确定要删除吗？');
+
+  useEffect(() => {
+    if (Number.isInteger(route.params.id)) {
+      // console.log('PetInfoScreen + ' + JSON.stringify(petState) + 'route.params.id :' + route.params.id);
+      console.log('userState is ' + JSON.stringify(userState));
+      petState.forEach((item: Pet) => {
+        if (item.id == route.params.id) {
+          setId(item.id);
+          setName(item.name);
+          setDate(new Date(item.birthday));
+          setWeight(item.weight);
+          setGender(item.gender == 'MALE' ? 0 : 1);
+          setDesc(item.desc);
+          console.log('PetInfoScheen  : ' + item.portraitUrl);
+          // @ts-ignore
+          setImageUri(item.portraitUrl);
+          setIsEdit(true);
+        }
+      });
+    }
+  }, []);
   type CardType = {
     type: string;
     fill: string;
   };
   const RenderCardList = (props: any) => {
-    const [choosedIndex, setChoosedIndex] = useState(0);
     return props.list.map((item: CardType, index: number) => {
       return (
         <Card
           status={choosedIndex == index ? 'primary' : 'basic'}
           onPress={() => {
             setChoosedIndex(index);
-            createPetParam.type = choosedIndex == 0 ? 'CAT' : 'DOG';
           }}
           key={index}
           style={{ width: pxToDp(100), height: pxToDp(70) }}
@@ -119,23 +153,83 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
   };
 
   const userCreatePet = async () => {
+    const createPetParam = {
+      name: name,
+      birthday: date,
+      gender: gender == 0 ? 'MALE' : 'FEMALE',
+      type: choosedIndex == 0 ? 'CAT' : choosedIndex == 1 ? 'DOG' : 'OTHER',
+      weight: weight,
+      desc: desc,
+      portraitUrl: fileUri,
+    };
+
+    // @ts-ignore
+    // const canCreate = Object.keys(createPetParam).some(key => createPetParam[key] == '');
+    // if (canCreate) {
+    //   console.log('miss props');
+    //   return;
+    // }
+    // console.log(`canCreate ${canCreate} , createParam : ${JSON.stringify(createPetParam)}`);
     try {
       console.log('userCreatePet : ' + JSON.stringify(createPetParam));
       const res = (await createPet(createPetParam)) as any;
       console.log(JSON.stringify(res));
       if (res.success) {
-        const result = (await queryDetail({})) as any;
-        if (result.success) {
-          const petInfoList: any = result.data.petInfoList;
-          await storage.save({
-            key: 'petData',
-            data: petInfoList,
-          });
-        }
+        await userQueryDetailAndSaveData();
         navigation.navigate('Main');
       }
     } catch (error) {
-      console.error('Err : ' + error);
+      console.error('createPet Err : ' + error);
+    }
+  };
+  const userEditPet = async () => {
+    const createPetParam = {
+      id,
+      name: name,
+      birthday: date,
+      gender: gender == 0 ? 'MALE' : 'FEMALE',
+      type: choosedIndex == 0 ? 'CAT' : choosedIndex == 1 ? 'DOG' : 'OTHER',
+      weight: weight,
+      desc: desc,
+      portraitUrl: fileUri,
+    };
+
+    // @ts-ignore
+    // const canCreate = Object.keys(createPetParam).some(key => createPetParam[key] == '');
+    // if (canCreate) {
+    //   console.log('miss props');
+    //   return;
+    // }
+    // console.log(`canCreate ${canCreate} , createParam : ${JSON.stringify(createPetParam)}`);
+    try {
+      console.log('userEditPet : ' + JSON.stringify(createPetParam));
+      const res = (await editPet(createPetParam)) as any;
+      console.log(JSON.stringify('userEditPet res: ' + JSON.stringify(res)));
+      if (res.success) {
+        await userQueryDetailAndSaveData();
+        navigation.navigate('Main');
+      }
+    } catch (error) {
+      console.error('createPet Err : ' + error);
+    }
+  };
+  const modalUserDeletePet = () => {
+    setModalState('danger');
+    setIsLoading(false);
+    setShowModal(true);
+  };
+  const userDeletePet = async () => {
+    console.log('userDeletePet id is ' + id);
+    setShowModal(true);
+    try {
+      const res = await deletePet({ id });
+      console.log('userDeletePet res : ' + JSON.stringify(res));
+      await userQueryDetailAndSaveData();
+      navigation.navigate('Main');
+      setShowModal(false);
+    } catch (error) {
+      setShowModal(false);
+      console.log('userDeletePet Err : ' + error);
     }
   };
 
@@ -165,17 +259,25 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
         console.log('upload res : ' + JSON.stringify(res));
         if (res.success) {
           console.log(res.data);
-          createPetParam.portraitUrl = res.data;
+          setFileUri(res.data);
+          // @ts-ignore
           setImageUri(localUri);
           setShowModal(false);
         }
       } catch (error) {
-        console.error('Err : ' + error);
+        console.error('upload Err : ' + error);
       }
     } else {
     }
   };
 
+  const clickOk = () => {
+    if (isEdit) {
+      userEditPet();
+    } else {
+      userCreatePet();
+    }
+  };
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <Layout
@@ -185,7 +287,14 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
           paddingBottom: insets.bottom,
         }}
       >
-        <CustomTopNavigation title="宠物信息" action={() => navigation.goBack()} />
+        <CustomTopNavigation
+          title="宠物信息"
+          showLeftBack={true}
+          leftAction={() => navigation.goBack()}
+          showRight={isEdit}
+          rightIconName={isEdit ? 'trash-2-outline' : ''}
+          rightAction={() => modalUserDeletePet()}
+        />
         <Layout
           style={{
             flex: 1,
@@ -216,7 +325,8 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
             size={'large'}
             ref={nameRef}
             textContentType={'name'}
-            onChangeText={name => (createPetParam.name = name)}
+            value={name}
+            onChangeText={name => setName(name)}
           />
           <Datepicker
             style={{ width: '100%' }}
@@ -236,7 +346,6 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
             }}
             onSelect={nextDate => {
               setDate(nextDate);
-              createPetParam.birthday = nextDate;
             }}
             accessoryRight={CalendarIcon}
           />
@@ -249,8 +358,10 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
               keyboardType={'numeric'}
               ref={weightRef}
               style={{ flex: 1, marginRight: pxToDp(20) }}
+              value={weight}
+              editable={false}
               textContentType={'name'}
-              onChangeText={number => (createPetParam.weight = String(number) + 'kg')}
+              onChangeText={string => setWeight(string)}
             />
             <Layout style={{ flex: 1 }}>
               <Text category="label" appearance="hint">
@@ -263,10 +374,9 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
                   justifyContent: 'center',
                   flex: 1,
                 }}
-                selectedIndex={selectedIndex}
+                selectedIndex={gender}
                 onChange={index => {
-                  setSelectedIndex(index);
-                  createPetParam.gender = index == 0 ? 'MALE' : 'FEMALE';
+                  setGender(index);
                 }}
               >
                 <Radio style={{ flex: 1 }}>公</Radio>
@@ -284,16 +394,15 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
             style={{ flex: 1, minHeight: pxToDp(64), maxHeight: pxToDp(64) }}
             caption={props => (
               <Text category="label" appearance="hint">
-                {multilineInputText.length}/30字
+                {desc ? desc.length : 0}/30字
               </Text>
             )}
             textStyle={{ overflow: 'scroll' }}
             textContentType={'name'}
-            value={multilineInputText}
+            value={desc}
             onChangeText={text => {
               if (text.length <= 30) {
-                setMultilineInputText(text);
-                createPetParam.desc = text;
+                setDesc(text);
               }
             }}
           />
@@ -309,12 +418,22 @@ export default function AnimalInfoScreen({ navigation }: UserCenterScreenProps<'
             {/* TODO 替换渲染 */}
             <RenderCardList list={[{ type: 'cat', fill: '' }, { type: 'dog', fill: '' }, { type: 'other' }]} />
           </Layout>
-          <Button style={{ width: '90%', marginTop: pxToDp(25) }} onPress={() => userCreatePet()}>
+          <Button style={{ width: '90%', marginTop: pxToDp(25) }} onPress={() => clickOk()}>
             完成
           </Button>
         </Layout>
-        <Modal backdropStyle={{ backgroundColor: 'rgba(0,0,0,0.3)' }} visible={showModal}>
-          <CustomModal status="primary" isLoading={true} text="123"></CustomModal>
+        <Modal style={{ margin: 0 }} isVisible={showModal}>
+          <CustomModal
+            status={modalState as CustomModalStatus}
+            isLoading={isLoading}
+            text={modalTitle}
+            showButtons={!isLoading}
+            cancelAction={() => setShowModal(false)}
+            confirmAction={() => {
+              userDeletePet();
+              setIsLoading(true);
+            }}
+          ></CustomModal>
         </Modal>
         <StatusBar style={'auto'} />
       </Layout>
