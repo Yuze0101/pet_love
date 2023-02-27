@@ -10,6 +10,7 @@ import { useLinkTo } from '@react-navigation/native';
 import { UserContext } from '../contexts/UserContext';
 import { PetContext } from '../contexts/PetContext';
 import { CacheImage } from '../components/CacheImage';
+import { CustomTopNavigation } from '../components/CustomTopNavigation';
 const { themeColor } = Colors;
 interface UserInfo {
   username: string;
@@ -44,39 +45,28 @@ export default function SettingScreen({ navigation }: UserCenterScreenProps<'Set
         paddingRight: pxToDp(24),
       }}
     >
-      <Layout style={{ height: pxToDp(45), width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
-        <Button
-          // appearance="outline"
-          status="basic"
-          accessoryRight={() => {
-            return (
-              <Icon
-                fill={themeColor.orange}
-                style={{ width: pxToDp(18), height: pxToDp(18) }}
-                name="arrow-back-outline"
-              />
-            );
-          }}
-          style={{
-            width: pxToDp(45),
-            borderRadius: pxToDp(45),
-          }}
-          onPress={() => navigation.goBack()}
-        />
-      </Layout>
+      <CustomTopNavigation
+        title={'设置'}
+        showLeftBack={true}
+        leftAction={() => {
+          navigation.navigate('Main');
+        }}
+        showRight={false}
+      />
       <Layout style={styles.topInfo}>
-        <Layout style={styles.topInfoLeft}>
-          <Layout style={{ ...styles.topInfoLeftImg, overflow: 'hidden' }}>
-            <CacheImage source={{ uri: userInfo.portraitUrl }} style={{ flex: 1 }} />
+        <TouchableWithoutFeedback
+          onPress={() => {
+            console.log('点击了头像');
+            navigation.navigate('EditUser');
+          }}
+        >
+          <Layout style={styles.topInfoLeft}>
+            <Layout style={{ ...styles.topInfoLeftImg, overflow: 'hidden' }}>
+              <CacheImage source={{ uri: userInfo.portraitUrl }} style={{ flex: 1 }} />
+            </Layout>
+            <Text style={styles.topInfoLeftName}>{userInfo.username}</Text>
           </Layout>
-
-          <Text style={styles.topInfoLeftName}>{userInfo.username}</Text>
-        </Layout>
-        <Layout style={styles.topInfoRight}>
-          <TouchableWithoutFeedback onPress={() => navigation.navigate('EditUser')}>
-            <Icon fill={themeColor.darkBrown} style={{ width: pxToDp(20), height: pxToDp(20) }} name="edit-2-outline" />
-          </TouchableWithoutFeedback>
-        </Layout>
+        </TouchableWithoutFeedback>
       </Layout>
       <Layout
         style={{
