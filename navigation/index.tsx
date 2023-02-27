@@ -14,7 +14,7 @@ import Colors from '../constants/Colors';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import ModalScreen from '../screens/ModalScreen';
 import NotFoundScreen from '../screens/NotFoundScreen';
-import TabOneScreen from '../screens/TabOneScreen';
+import HomeScreen from '../screens/HomeScreen';
 import TabTwoScreen from '../screens/TabTwoScreen';
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
@@ -74,7 +74,7 @@ function BottomTabNavigator() {
   useUpdateUserAndPetInfo();
   return (
     <BottomTab.Navigator
-      initialRouteName="TabOne"
+      initialRouteName="HomeScreen"
       tabBar={props => BottomNavigatoin({ ...props })}
       screenOptions={{
         tabBarActiveTintColor: themeColor.orange,
@@ -83,11 +83,10 @@ function BottomTabNavigator() {
       }}
     >
       <BottomTab.Screen
-        name="TabOne"
-        component={TabOneScreen}
-        options={({ navigation }: RootTabScreenProps<'TabOne'>) => ({
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="map" color={color} />,
+        name="HomeScreen"
+        component={HomeScreen}
+        options={({ navigation }: RootTabScreenProps<'HomeScreen'>) => ({
+          headerShown: false,
         })}
       />
       <BottomTab.Screen
