@@ -11,6 +11,10 @@ export function CacheImage(props: CacheImageProps) {
   const [imgUri, setImgUri] = useState();
   useEffect(() => {
     async function loadImg() {
+      if (!props.source.uri) {
+        console.warn('CacheImage uri is no valid ' + JSON.stringify(props));
+        return;
+      }
       if (/file:\/\//.test(props.source.uri)) {
         console.log('local Image already exist');
         // @ts-ignore

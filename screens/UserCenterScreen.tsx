@@ -52,7 +52,9 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
         title={userInfo.username}
         showRight={true}
         rightIconName="settings-outline"
-        rightAction={() => {}}
+        rightAction={() => {
+          navigation.navigate('Setting')
+        }}
       />
 
       <Layout style={{ paddingLeft: pxToDp(24), paddingRight: pxToDp(24) }}>
