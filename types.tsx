@@ -6,6 +6,7 @@
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { SvgProps } from 'react-native-svg';
 
 declare global {
   namespace ReactNavigation {
@@ -28,7 +29,7 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> = Nati
 >;
 
 export type RootTabParamList = {
-  TabOne: undefined;
+  HomeScreen: undefined;
   TabTwo: undefined;
   TabThree: undefined;
   UserCenter: NativeStackScreenProps<UserCenterParamList>;
@@ -82,3 +83,7 @@ export type User = {
   portraitUrl: string;
   follow_count: number;
 };
+
+export type TabIconProps = {
+  isActive: boolean;
+} & SvgProps;
