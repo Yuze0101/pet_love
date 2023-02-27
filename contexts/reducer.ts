@@ -2,6 +2,8 @@ import storage from '../utils/storage';
 import { User, Pet } from '../types';
 import { Actions, ActioinType } from '../types';
 
+// TODO 优化存取逻辑，减少异步次数
+
 export const reducer = async (state: any, action: Actions) => {
   console.log(`state is ${JSON.stringify(state)} , actioin is ${JSON.stringify(action)}`);
   switch (action.type) {
