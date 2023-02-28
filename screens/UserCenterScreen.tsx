@@ -1,6 +1,6 @@
-import { StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, TouchableWithoutFeedback, Image } from 'react-native';
 import { useEffect, useState, useContext, useCallback } from 'react';
-import { Text, Layout, Button, Divider, Input, Icon, Spinner, IconProps } from '@ui-kitten/components';
+import { Text, Layout, Button, Divider, Input, Icon, Card, Spinner, IconProps } from '@ui-kitten/components';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // import { useFocusEffect } from '@react-navigation/native';
 
@@ -53,7 +53,7 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
         showRight={true}
         rightIconName="settings-outline"
         rightAction={() => {
-          navigation.navigate('Setting')
+          navigation.navigate('Setting');
         }}
       />
 
@@ -210,7 +210,60 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
           <>
             <Text style={styles.cardListTitle}>{'动态'}</Text>
             <Layout style={styles.cardList}>
-              <Layout style={styles.cardListItem}></Layout>
+              <TouchableWithoutFeedback
+                onPress={() => {
+                  navigation.navigate('AddPetStory', { id: petInfoList[currentIndex]?.id });
+                }}
+              >
+                <Layout
+                  style={{
+                    width: pxToDp(142),
+                    height: pxToDp(178),
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    flexDirection: 'column',
+                    borderWidth: pxToDp(1),
+                    borderColor: themeColor.lightBrown,
+                    borderRadius: pxToDp(5),
+                  }}
+                >
+                  <Icon
+                    fill={themeColor.darkBrown}
+                    style={{ width: pxToDp(20), height: pxToDp(20) }}
+                    name="plus-outline"
+                  />
+                  <Text>{'记录此刻'}</Text>
+                </Layout>
+              </TouchableWithoutFeedback>
+
+              <TouchableWithoutFeedback>
+                <Layout
+                  style={{
+                    width: pxToDp(142),
+                    height: pxToDp(178),
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    flexDirection: 'column',
+                    borderRadius: pxToDp(5),
+                  }}
+                >
+                  <Image
+                    source={require('../assets/images/cat.jpg')}
+                    style={{ width: pxToDp(142), height: pxToDp(178), opacity: 0.5 }}
+                  />
+                  <Text
+                    style={{
+                      position: 'absolute',
+                      top: pxToDp(90),
+                      color: '#fff',
+                    }}
+                  >
+                    {'它的故事'}
+                  </Text>
+                </Layout>
+              </TouchableWithoutFeedback>
             </Layout>
           </>
         ) : (
@@ -313,10 +366,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'flex-start',
-    justifyContent: 'flex-start',
-    flexWrap: 'wrap',
-  },
-  cardListItem: {
-    width: '50%',
+    justifyContent: 'space-between',
   },
 });
