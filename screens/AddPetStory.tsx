@@ -12,7 +12,7 @@ import { CacheImage } from '../components/CacheImage';
 import Modal from 'react-native-modal';
 import { CustomModal, CustomModalStatus } from '../components/CustomModal';
 import { CustomTopNavigation } from '../components/CustomTopNavigation';
-import { upload, queryDetail, addPetStory } from '../api';
+import { upload, queryDetail, addCard as addPetStory } from '../api';
 import * as ImagePicker from 'expo-image-picker';
 import { userQueryDetailAndSaveData } from '../utils/queryDetailAndSaveData';
 const { themeColor } = Colors;

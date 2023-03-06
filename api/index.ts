@@ -14,5 +14,5 @@ export const deletePet = (params: {}) => get({ url: '/pet/userInfo/deletePet.jso
 
 
 
-export const addPetStory = (params: {}) => post({ url: '/pet/card/addCard.json', params }, 'multipart/form-data');
-export const changeStatus = (params: {}) => post({ url: '/pet/card/updateStatus.json', params });
+export const addCard = (params: {}) => post({ url: '/pet/card/addCard.json', params }, 'multipart/form-data');
+export const updateStatus = (params: {}) => post({ url: '/pet/card/updateStatus.json', params });
