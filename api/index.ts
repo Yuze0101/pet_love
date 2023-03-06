@@ -11,3 +11,8 @@ export const upload = (params: {}) => post({ url: '/pet/tool/upload.json', param
 export const createPet = (params: {}) => post({ url: '/pet/userInfo/createPet.json', params });
 export const editPet = (params: {}) => post({ url: '/pet/userInfo/editPet.json', params });
 export const deletePet = (params: {}) => get({ url: '/pet/userInfo/deletePet.json', params });
+
+
+
+export const addPetStory = (params: {}) => post({ url: '/pet/card/addCard.json', params }, 'multipart/form-data');
+export const changeStatus = (params: {}) => post({ url: '/pet/card/updateStatus.json', params });

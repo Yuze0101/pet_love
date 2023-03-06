@@ -224,6 +224,7 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
                     alignItems: 'center',
                     flexDirection: 'column',
                     borderWidth: pxToDp(1),
+                    borderStyle: 'dashed',
                     borderColor: themeColor.lightBrown,
                     borderRadius: pxToDp(5),
                   }}
@@ -247,6 +248,7 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
                     alignItems: 'center',
                     flexDirection: 'column',
                     borderRadius: pxToDp(5),
+                    overflow: 'hidden',
                   }}
                 >
                   <Image
