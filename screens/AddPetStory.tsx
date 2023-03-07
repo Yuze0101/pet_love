@@ -12,7 +12,7 @@ import { CacheImage } from '../components/CacheImage';
 import Modal from 'react-native-modal';
 import { CustomModal, CustomModalStatus } from '../components/CustomModal';
 import { CustomTopNavigation } from '../components/CustomTopNavigation';
-import { upload, queryDetail, addCard as addPetStory } from '../api';
+import { upload, queryDetail, addCard as addPetStory, updateStatus } from '../api';
 import * as ImagePicker from 'expo-image-picker';
 import { userQueryDetailAndSaveData } from '../utils/queryDetailAndSaveData';
 const { themeColor } = Colors;
@@ -70,7 +70,7 @@ export default function AddPetStory({ navigation, route }: UserCenterScreenProps
     }
   };
   const DelImg = (index: number) => {
-    console.log('clicked DelImg',index);
+    console.log('clicked DelImg', index);
     let newImgList = imgList;
     newImgList.splice(index, 1);
     console.log('newImgList : ' + JSON.stringify(newImgList));
@@ -88,9 +88,10 @@ export default function AddPetStory({ navigation, route }: UserCenterScreenProps
     console.log('content : ' + content);
     console.log('checked : ' + checked);
     const publishParam = {
-      id: route.params.id,
-      picList: JSON.stringify(imgList),
+      petId: route.params.id,
+      picList: imgList,
       content: content,
+      status: checked ? 'PUBLIC' : 'PRIVATE',
     };
     console.log('publishParam : ' + JSON.stringify(publishParam));
     try {
@@ -110,7 +111,9 @@ export default function AddPetStory({ navigation, route }: UserCenterScreenProps
         setModalState('danger');
         setModalTitle('发布失败');
         setIsLoading(false);
-        setShowModal(false);
+        // setTimeout(() => {
+        //   navigation.navigate('Main');
+        // }, 1000);
       }
     } catch (error) {
       console.error('publish Err : ' + error);
@@ -138,7 +141,6 @@ export default function AddPetStory({ navigation, route }: UserCenterScreenProps
         {imgList.length > 0 ? (
           <>
             {imgList.map((item: any, index: number) => {
-
               return (
                 <Layout
                   style={{
@@ -149,10 +151,10 @@ export default function AddPetStory({ navigation, route }: UserCenterScreenProps
                   key={'petListPic' + index}
                 >
                   <CacheImage source={{ uri: item }} style={{ flex: 1 }}></CacheImage>
-                  <TouchableWithoutFeedback 
-                  onPress={() => {
-                    DelImg(index);
-                  }}
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      DelImg(index);
+                    }}
                   >
                     <Layout
                       style={{
