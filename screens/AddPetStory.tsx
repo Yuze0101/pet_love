@@ -12,7 +12,7 @@ import { CacheImage } from '../components/CacheImage';
 import Modal from 'react-native-modal';
 import { CustomModal, CustomModalStatus } from '../components/CustomModal';
 import { CustomTopNavigation } from '../components/CustomTopNavigation';
-import { upload, queryDetail, addCard as addPetStory } from '../api';
+import { upload, queryDetail, addCard as addPetStory, updateStatus } from '../api';
 import * as ImagePicker from 'expo-image-picker';
 import { userQueryDetailAndSaveData } from '../utils/queryDetailAndSaveData';
 const { themeColor } = Colors;
@@ -27,6 +27,7 @@ export default function AddPetStory({ navigation, route }: UserCenterScreenProps
   const [modalState, setModalState] = useState('primary');
   const [isLoading, setIsLoading] = useState(true);
   const [modalTitle, setModalTitle] = useState('确定要删除吗？');
+  const [checkResult, setCheckResult] = useState(true);
   const pickImage = async () => {
     console.log('clicked pickImage');
     // No permissions request is necessary for launching the image library
@@ -70,7 +71,7 @@ export default function AddPetStory({ navigation, route }: UserCenterScreenProps
     }
   };
   const DelImg = (index: number) => {
-    console.log('clicked DelImg',index);
+    console.log('clicked DelImg', index);
     let newImgList = imgList;
     newImgList.splice(index, 1);
     console.log('newImgList : ' + JSON.stringify(newImgList));
@@ -88,9 +89,10 @@ export default function AddPetStory({ navigation, route }: UserCenterScreenProps
     console.log('content : ' + content);
     console.log('checked : ' + checked);
     const publishParam = {
-      id: route.params.id,
-      picList: JSON.stringify(imgList),
+      petId: route.params.id,
+      picList: imgList,
       content: content,
+      status: checked ? 'PUBLIC' : 'PRIVATE',
     };
     console.log('publishParam : ' + JSON.stringify(publishParam));
     try {
@@ -110,11 +112,43 @@ export default function AddPetStory({ navigation, route }: UserCenterScreenProps
         setModalState('danger');
         setModalTitle('发布失败');
         setIsLoading(false);
-        setShowModal(false);
+        // setTimeout(() => {
+        //   navigation.navigate('Main');
+        // }, 1000);
       }
     } catch (error) {
       console.error('publish Err : ' + error);
     }
+  };
+  const ShowIcon = (props: any) => (
+    <Icon
+      style={{ width: pxToDp(12), height: pxToDp(12), marginRight: pxToDp(3) }}
+      fill={props.color}
+      name={props.name}
+    />
+  );
+  const renderCaption = (props: any) => {
+    return (
+      <Layout style={{ flexDirection: 'row', alignItems: 'center', height: pxToDp(13) }}>
+        {ShowIcon({
+          color: props.isOk ? '#3DE27C' : '#FF5182',
+          name: props.isOk ? 'checkmark-outline' : 'alert-circle-outline',
+        })}
+        <Text style={{ color: '#FF5182', fontSize: pxToDp(11) }}>{!props.isOk ? props.rule : ''}</Text>
+      </Layout>
+    );
+  };
+  const validate = (contentData: any) => {
+    //check maxlength 150 words
+    let isOK = true;
+    if (contentData.length > 150) {
+      isOK = false;
+    } else {
+      isOK = true;
+    }
+    setCheckResult(isOK);
+    console.log('checkResult : ' + isOK);
+    return contentData;
   };
   return (
     <Layout
@@ -138,7 +172,6 @@ export default function AddPetStory({ navigation, route }: UserCenterScreenProps
         {imgList.length > 0 ? (
           <>
             {imgList.map((item: any, index: number) => {
-
               return (
                 <Layout
                   style={{
@@ -149,10 +182,10 @@ export default function AddPetStory({ navigation, route }: UserCenterScreenProps
                   key={'petListPic' + index}
                 >
                   <CacheImage source={{ uri: item }} style={{ flex: 1 }}></CacheImage>
-                  <TouchableWithoutFeedback 
-                  onPress={() => {
-                    DelImg(index);
-                  }}
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      DelImg(index);
+                    }}
                   >
                     <Layout
                       style={{
@@ -221,8 +254,17 @@ export default function AddPetStory({ navigation, route }: UserCenterScreenProps
           ref={contentRef}
           textContentType={'none'}
           value={content}
-          onChangeText={name => setContent(name)}
+          caption={() => renderCaption({ rule: '内容过长', isOk: checkResult })}
+          onChangeText={content => setContent(validate(content))}
         />
+        <Text
+          style={{
+            textAlign: 'right',
+            color: themeColor.darkBrown,
+          }}
+        >
+          {content.length + '/150'}
+        </Text>
       </Layout>
       <Layout
         style={{
@@ -248,9 +290,19 @@ export default function AddPetStory({ navigation, route }: UserCenterScreenProps
           paddingRight: pxToDp(24),
         }}
       >
-        <Button style={{ width: '90%', marginTop: pxToDp(50) }} onPress={() => publish()}>
-          {'发布'}
-        </Button>
+        {content.length > 0 && imgList.length > 0 && checkResult ? (
+          <>
+            <Button style={{ width: '90%', marginTop: pxToDp(50) }} onPress={() => publish()}>
+              {'发布'}
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button style={{ width: '90%', marginTop: pxToDp(50), backgroundColor: '#F1F2F3', borderColor: '#F1F2F3' }}>
+              {'发布'}
+            </Button>
+          </>
+        )}
         <Modal style={{ margin: 0 }} isVisible={showModal}>
           <CustomModal
             status={modalState as CustomModalStatus}
