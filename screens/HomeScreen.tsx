@@ -22,20 +22,13 @@ import { CacheImage } from '../components/CacheImage';
 import { CreativeCard } from '../components/CreativeCard';
 import { pxToDp } from '../constants/Layout';
 import { queryCardByPage } from '../api';
+import { CreativeCardProps } from '../types';
 
 type Props = {};
 
 type RenderTitleProps = {
   isActive: boolean;
   title: string;
-};
-
-type CreativeCardProps = {
-  avatarUrl?: string;
-  userName: string;
-  imageUrl?: string;
-  releaseTime: Date;
-  contentText: string;
 };
 
 type ListItem = {
@@ -155,7 +148,7 @@ export default function HomeScreen({}: Props) {
         </TabBar>
         <Divider></Divider>
         <ViewPager selectedIndex={selectedIndex} onSelect={index => setSelectedIndex(index)}>
-          <Layout level="2" style={{ height: '100%' }}>
+          <Layout style={{ height: '100%' }}>
             <List
               refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
               data={[4, 5, 6]}
@@ -164,7 +157,7 @@ export default function HomeScreen({}: Props) {
               // style={{ paddingLeft: pxToDp(8), paddingRight: pxToDp(8) }}
             ></List>
           </Layout>
-          <Layout level="2" style={{ height: '100%' }}>
+          <Layout style={{ height: '100%' }}>
             {/* <List
               refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
               data={[1, 2]}

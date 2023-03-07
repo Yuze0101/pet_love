@@ -69,7 +69,7 @@ const renderImageList = (imageList: string[]) => {
 export const CreativeCard = (props: Props) => {
   if (!props.imageList) return null;
   return (
-    <Card appearance="filled" header={props.header} footer={props.footer}>
+    <Card header={props.header} footer={props.footer}>
       <Layout style={{ height: pxToDp(180), flexDirection: 'row' }}>{renderImageList(['1', '2'])}</Layout>
       <Text category="p1" numberOfLines={3}>
         {props.content}

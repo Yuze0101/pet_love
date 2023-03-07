@@ -46,6 +46,7 @@ export type UserCenterParamList = {
   Setting: undefined;
   EditUser: undefined;
   AddPetStory: PetInfoProps;
+  ShowPetStory: undefined;
 };
 
 export type PetInfoProps = {
@@ -88,3 +89,11 @@ export type User = {
 export type TabIconProps = {
   isActive: boolean;
 } & SvgProps;
+
+export type CreativeCardProps = {
+  avatarUrl?: string;
+  userName: string;
+  imageUrl?: string;
+  releaseTime: Date;
+  contentText: string;
+};

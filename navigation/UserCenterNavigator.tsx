@@ -6,6 +6,7 @@ import PetInfoScreen from '../screens/PetInfoScreen';
 import SettingScreen from '../screens/SettingScreen';
 import EditUserScreen from '../screens/EditUserScreen';
 import AddPetStory from '../screens/AddPetStory';
+import { ShowPetStory } from '../screens/ShowPetStory';
 
 const Stack = createNativeStackNavigator<UserCenterParamList>();
 type Props = {};
@@ -18,6 +19,7 @@ export default function UserCenterNavigator({}: Props) {
       <Stack.Screen name="Setting" component={SettingScreen} options={{ headerShown: false }} />
       <Stack.Screen name="EditUser" component={EditUserScreen} options={{ headerShown: false }} />
       <Stack.Screen name="AddPetStory" component={AddPetStory} options={{ headerShown: false }} />
+      <Stack.Screen name="ShowPetStory" component={ShowPetStory} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }
