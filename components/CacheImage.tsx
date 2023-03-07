@@ -5,6 +5,7 @@ import { Image, ImageStyle } from 'react-native';
 type CacheImageProps = {
   source: { uri: string };
   style?: ImageStyle;
+  resizeMode?: 'cover' | 'contain' | 'stretch' | 'repeat' | 'center';
 };
 
 export function CacheImage(props: CacheImageProps) {
@@ -44,7 +45,7 @@ export function CacheImage(props: CacheImageProps) {
     loadImg();
   }, [props.source.uri]);
 
-  return <Image source={{ uri: imgUri }} style={props.style} />;
+  return <Image resizeMode={props.resizeMode} source={{ uri: imgUri }} style={props.style} />;
 }
 
 // 图片类型

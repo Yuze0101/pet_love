@@ -8,27 +8,30 @@ import { pxToDp } from '../constants/Layout';
 import { UserCenterScreenProps } from '../types';
 import { CreativeCard } from '../components/CreativeCard';
 import { CreativeCardProps } from '../types';
+import { queryCardByPage } from '../api';
+import { CacheImage } from '../components/CacheImage';
 
-const CardHeader = () => {
+const CardHeader = (props: CreativeCardProps) => {
   const theme = useTheme();
+  const date = new Date(props.createDate);
   return (
     <Layout style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-      <Layout style={{ paddingLeft: pxToDp(5), flexDirection: 'row', alignItems: 'center' }}>
-        <Text category="h6">日期</Text>
+      <Layout style={{ paddingLeft: pxToDp(5), flexDirection: 'row', alignItems: 'flex-end' }}>
+        <Text category="h6">{date.getDate()}</Text>
         <Text category="c1" style={{ marginLeft: pxToDp(5) }}>
-          月份
+          {date.getMonth() + 1}月
         </Text>
       </Layout>
       <ButtonGroup size="small" appearance="ghost" style={{ margin: 2 }}>
         <Button style={{ flexDirection: 'column' }} accessoryLeft={<Icon name="lock" />}></Button>
         <Button style={{ flexDirection: 'column' }} accessoryLeft={<Icon name="message-circle-outline" />}>
-          999+
+          {props.commentCount}
         </Button>
         <Button
           style={{ flexDirection: 'column' }}
           accessoryLeft={<Icon fill={theme['color-danger-500']} name="heart" />}
         >
-          999+
+          {props.likesCount}
         </Button>
       </ButtonGroup>
     </Layout>
@@ -37,11 +40,28 @@ const CardHeader = () => {
 
 export const ShowPetStory = ({ navigation, route }: UserCenterScreenProps<'ShowPetStory'>) => {
   const insets = useSafeAreaInsets();
-  useEffect(() => {}, []);
+  const [petStoryList, setPetStoryList] = useState([]);
+  const userQueryCardByPage = async () => {
+    try {
+      const res: any = await queryCardByPage({
+        petId: 38,
+        pageNum: 1,
+        pageSize: 3,
+      });
+      console.log('userQueryCardByPage Result ' + JSON.stringify(res));
+      if (res.success) {
+        console.log('userQueryCardByPage data ' + JSON.stringify(res.data));
+        setPetStoryList(res.data);
+      }
+    } catch (error) {}
+  };
+  useEffect(() => {
+    userQueryCardByPage();
+  }, []);
 
-  const renderItem = (item: CreativeCardProps) => (
+  const renderItem = (props: CreativeCardProps) => (
     <Layout style={{ padding: pxToDp(8) }}>
-      <CreativeCard content="123123123" header={CardHeader} imageList={[]} />
+      <CreativeCard content={props.content} header={() => CardHeader(props)} imageList={props.picList} />
     </Layout>
   );
   return (
@@ -66,9 +86,9 @@ export const ShowPetStory = ({ navigation, route }: UserCenterScreenProps<'ShowP
         }}
       >
         <List
-          data={[4, 5, 6]}
+          data={petStoryList}
           // TODO 修正传递参数
-          renderItem={props => renderItem()}
+          renderItem={props => renderItem(props.item)}
           style={{ borderWidth: 1, borderColor: 'red' }}
         ></List>
       </Layout>

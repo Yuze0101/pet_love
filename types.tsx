@@ -91,9 +91,15 @@ export type TabIconProps = {
 } & SvgProps;
 
 export type CreativeCardProps = {
-  avatarUrl?: string;
-  userName: string;
-  imageUrl?: string;
-  releaseTime: Date;
-  contentText: string;
+  id: number;
+  createDate: Date;
+  modifyDate: Date;
+  petId: number;
+  content: string;
+  picList: string[];
+  likesCount: number;
+  commentCount: number;
+  type: 'CAT' | 'DOG' | 'OTHER';
+  status: 'PUBLIC' | 'PRIVATE';
+  extInfo: {};
 };
