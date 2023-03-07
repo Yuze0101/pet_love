@@ -19,6 +19,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
 import { CacheImage } from '../components/CacheImage';
+import { CreativeCard } from '../components/CreativeCard';
 import { pxToDp } from '../constants/Layout';
 import { queryCardByPage } from '../api';
 
@@ -98,14 +99,14 @@ const CardHeader = () => (
   </Layout>
 );
 
-const CreativeCard = (props: CreativeCardProps) => (
-  <Card appearance="filled" header={CardHeader} footer={CardFooter}>
-    <Image source={require('../assets/images/locked.png')}></Image>
-    <Text category="p1" numberOfLines={3}>
-      contentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontent
-    </Text>
-  </Card>
-);
+// const CreativeCard = (props: CreativeCardProps) => (
+//   <Card appearance="filled" header={CardHeader} footer={CardFooter}>
+//     <Image source={require('../assets/images/locked.png')}></Image>
+//     <Text category="p1" numberOfLines={3}>
+//       contentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontent
+//     </Text>
+//   </Card>
+// );
 
 export default function HomeScreen({}: Props) {
   const insets = useSafeAreaInsets();
@@ -137,7 +138,7 @@ export default function HomeScreen({}: Props) {
 
   const renderItem = (item: CreativeCardProps) => (
     <Layout style={{ padding: pxToDp(8) }}>
-      <CreativeCard />
+      <CreativeCard content="123123123" header={CardHeader} footer={CardFooter} imageList={[]} />
     </Layout>
   );
   return (
