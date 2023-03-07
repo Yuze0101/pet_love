@@ -27,6 +27,7 @@ export default function AddPetStory({ navigation, route }: UserCenterScreenProps
   const [modalState, setModalState] = useState('primary');
   const [isLoading, setIsLoading] = useState(true);
   const [modalTitle, setModalTitle] = useState('确定要删除吗？');
+  const [checkResult, setCheckResult] = useState(true);
   const pickImage = async () => {
     console.log('clicked pickImage');
     // No permissions request is necessary for launching the image library
@@ -118,6 +119,36 @@ export default function AddPetStory({ navigation, route }: UserCenterScreenProps
     } catch (error) {
       console.error('publish Err : ' + error);
     }
+  };
+  const ShowIcon = (props: any) => (
+    <Icon
+      style={{ width: pxToDp(12), height: pxToDp(12), marginRight: pxToDp(3) }}
+      fill={props.color}
+      name={props.name}
+    />
+  );
+  const renderCaption = (props: any) => {
+    return (
+      <Layout style={{ flexDirection: 'row', alignItems: 'center', height: pxToDp(13) }}>
+        {ShowIcon({
+          color: props.isOk ? '#3DE27C' : '#FF5182',
+          name: props.isOk ? 'checkmark-outline' : 'alert-circle-outline',
+        })}
+        <Text style={{ color: '#FF5182', fontSize: pxToDp(11) }}>{!props.isOk ? props.rule : ''}</Text>
+      </Layout>
+    );
+  };
+  const validate = (contentData: any) => {
+    //check maxlength 150 words
+    let isOK = true;
+    if (contentData.length > 150) {
+      isOK = false;
+    } else {
+      isOK = true;
+    }
+    setCheckResult(isOK);
+    console.log('checkResult : ' + isOK);
+    return contentData;
   };
   return (
     <Layout
@@ -223,8 +254,17 @@ export default function AddPetStory({ navigation, route }: UserCenterScreenProps
           ref={contentRef}
           textContentType={'none'}
           value={content}
-          onChangeText={name => setContent(name)}
+          caption={() => renderCaption({ rule: '内容过长', isOk: checkResult })}
+          onChangeText={content => setContent(validate(content))}
         />
+        <Text
+          style={{
+            textAlign: 'right',
+            color: themeColor.darkBrown,
+          }}
+        >
+          {content.length + '/150'}
+        </Text>
       </Layout>
       <Layout
         style={{
@@ -250,9 +290,19 @@ export default function AddPetStory({ navigation, route }: UserCenterScreenProps
           paddingRight: pxToDp(24),
         }}
       >
-        <Button style={{ width: '90%', marginTop: pxToDp(50) }} onPress={() => publish()}>
-          {'发布'}
-        </Button>
+        {content.length > 0 && imgList.length > 0 && checkResult ? (
+          <>
+            <Button style={{ width: '90%', marginTop: pxToDp(50) }} onPress={() => publish()}>
+              {'发布'}
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button style={{ width: '90%', marginTop: pxToDp(50), backgroundColor: '#F1F2F3', borderColor: '#F1F2F3' }}>
+              {'发布'}
+            </Button>
+          </>
+        )}
         <Modal style={{ margin: 0 }} isVisible={showModal}>
           <CustomModal
             status={modalState as CustomModalStatus}
