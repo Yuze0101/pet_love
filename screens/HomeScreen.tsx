@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { RefreshControl, Image } from 'react-native';
 import {
   Layout,
@@ -20,6 +20,7 @@ import { StatusBar } from 'expo-status-bar';
 
 import { CacheImage } from '../components/CacheImage';
 import { pxToDp } from '../constants/Layout';
+import { queryCardByPage } from '../api';
 
 type Props = {};
 
@@ -110,6 +111,21 @@ export default function HomeScreen({}: Props) {
   const insets = useSafeAreaInsets();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
+  const [listData, setListData] = useState([]);
+
+  const userQueryCardByPage = async () => {
+    const res = await queryCardByPage({
+      petId: 1,
+      pageNum: 1,
+      pageSize: 3,
+    });
+    console.log('userQueryCardByPage Result : ' + JSON.stringify(res));
+  };
+  useEffect(() => {
+    // TODO 请求列表
+    // userQueryCardByPage();
+  }, []);
+
   // const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(() => {
@@ -119,7 +135,7 @@ export default function HomeScreen({}: Props) {
     }, 2000);
   }, []);
 
-  const renderItem = () => (
+  const renderItem = (item: CreativeCardProps) => (
     <Layout style={{ padding: pxToDp(8) }}>
       <CreativeCard />
     </Layout>
@@ -141,8 +157,9 @@ export default function HomeScreen({}: Props) {
           <Layout level="2" style={{ height: '100%' }}>
             <List
               refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-              data={[1, 2, 3]}
-              renderItem={renderItem}
+              data={[4, 5, 6]}
+              // TODO 修正传递参数
+              renderItem={props => renderItem(props.item)}
               // style={{ paddingLeft: pxToDp(8), paddingRight: pxToDp(8) }}
             ></List>
           </Layout>
