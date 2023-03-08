@@ -7,6 +7,7 @@ const BackIcon = (props: IconProps) => <Icon {...props} name="arrow-back" />;
 const CustomIcon = (props: IconProps) => <Icon {...props} name={props.name} />;
 type CustomTopNavigationProps = {
   title: string;
+  avatar?: string;
   subTitle?: string;
   showLeftBack?: boolean;
   showRight?: boolean;
@@ -51,7 +52,7 @@ export const CustomTopNavigation = (props: CustomTopNavigationProps) => {
       // title={evaProps => <Text {...evaProps}>{props.title}</Text>}
       title={() => (
         <Layout style={{ flexDirection: 'row', alignItems: 'center' }}>
-          {/* <Avatar source={require('../assets/images/icon.png')} /> */}
+          {props.avatar ? <Avatar source={{ uri: props.avatar }} /> : null}
           <Text style={{ marginLeft: pxToDp(10) }}>{props.title}</Text>
         </Layout>
       )}

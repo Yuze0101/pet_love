@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { Layout, List, Text, useTheme, Divider, Avatar, ButtonGroup, Button, Icon } from '@ui-kitten/components';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -7,9 +7,10 @@ import { CustomTopNavigation } from '../components/CustomTopNavigation';
 import { pxToDp } from '../constants/Layout';
 import { UserCenterScreenProps } from '../types';
 import { CreativeCard } from '../components/CreativeCard';
-import { CreativeCardProps } from '../types';
+import { CreativeCardProps, Pet } from '../types';
 import { queryCardByPage } from '../api';
 import { CacheImage } from '../components/CacheImage';
+import { PetContext } from '../contexts/PetContext';
 
 const CardHeader = (props: CreativeCardProps) => {
   const theme = useTheme();
@@ -37,25 +38,39 @@ const CardHeader = (props: CreativeCardProps) => {
     </Layout>
   );
 };
-
+// TODO 增加上滑刷新
 export const ShowPetStory = ({ navigation, route }: UserCenterScreenProps<'ShowPetStory'>) => {
   const insets = useSafeAreaInsets();
+  const [petState, _dispatch] = useContext(PetContext);
   const [petStoryList, setPetStoryList] = useState([]);
-  const userQueryCardByPage = async () => {
-    try {
-      const res: any = await queryCardByPage({
-        petId: 38,
-        pageNum: 1,
-        pageSize: 3,
-      });
-      console.log('userQueryCardByPage Result ' + JSON.stringify(res));
-      if (res.success) {
-        console.log('userQueryCardByPage data ' + JSON.stringify(res.data));
-        setPetStoryList(res.data);
-      }
-    } catch (error) {}
+  const [petInfo, setPetInfo] = useState({} as Pet);
+  const userQueryCardByPage = (() => {
+    let pageNum = 1;
+    const nextPage = (value: number) => {
+      pageNum += value;
+    };
+    return async () => {
+      try {
+        const res: any = await queryCardByPage({
+          petId: route.params.id,
+          pageNum,
+          pageSize: 5,
+        });
+        console.log(`userQueryCardByPage, pageNum: ${pageNum}  Result ` + JSON.stringify(res));
+        if (res.success) {
+          setPetStoryList(res.data);
+          nextPage(1);
+        }
+      } catch (error) {}
+    };
+  })();
+  const userSetPetInfo = () => {
+    petState.forEach((item: Pet) => {
+      if (item.id == route.params.id) setPetInfo(item);
+    });
   };
   useEffect(() => {
+    userSetPetInfo();
     userQueryCardByPage();
   }, []);
 
@@ -72,7 +87,8 @@ export const ShowPetStory = ({ navigation, route }: UserCenterScreenProps<'ShowP
       }}
     >
       <CustomTopNavigation
-        title="12"
+        title={petInfo.name}
+        avatar={petInfo.portraitUrl}
         showLeftBack={true}
         leftAction={() => {
           navigation.goBack();
@@ -81,16 +97,9 @@ export const ShowPetStory = ({ navigation, route }: UserCenterScreenProps<'ShowP
       <Layout
         style={{
           flex: 1,
-          borderWidth: 1,
-          borderColor: 'red',
         }}
       >
-        <List
-          data={petStoryList}
-          // TODO 修正传递参数
-          renderItem={props => renderItem(props.item)}
-          style={{ borderWidth: 1, borderColor: 'red' }}
-        ></List>
+        <List data={petStoryList} renderItem={props => renderItem(props.item)}></List>
       </Layout>
       <StatusBar style="auto" />
     </Layout>

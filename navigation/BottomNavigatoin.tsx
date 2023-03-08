@@ -6,7 +6,6 @@ import HomeIcon from '../components/HomeIcon';
 import ShapeIcon from '../components/ShapeIcon';
 import PetBellIcon from '../components/PetBellIcon';
 
-// TODO 底部Bar增加Icon
 export const BottomNavigatoin = ({ navigation, state }: BottomTabBarProps) => (
   <BottomNavigation selectedIndex={state.index} onSelect={index => navigation.navigate(state.routeNames[index])}>
     <BottomNavigationTab icon={() => <HomeIcon isActive={state.index == 0} />} />

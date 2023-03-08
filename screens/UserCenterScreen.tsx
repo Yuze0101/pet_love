@@ -238,7 +238,9 @@ export default function UserCenterScreen({ navigation }: UserCenterScreenProps<'
                 </Layout>
               </TouchableWithoutFeedback>
 
-              <TouchableWithoutFeedback onPress={() => navigation.navigate('ShowPetStory')}>
+              <TouchableWithoutFeedback
+                onPress={() => navigation.navigate('ShowPetStory', { id: petInfoList[currentIndex]?.id })}
+              >
                 <Layout
                   style={{
                     width: pxToDp(142),

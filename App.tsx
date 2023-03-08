@@ -9,7 +9,6 @@ import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import { IconRegistry } from '@ui-kitten/components';
 
 import useCachedResources from './hooks/useCachedResources';
-// TODO 适配暗黑模式
 import useColorScheme from './hooks/useColorScheme';
 import { useAsyncReducer } from './hooks/useAsyncReducer';
 // TODO 可以做弹通知回到app刷新app信息

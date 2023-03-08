@@ -46,7 +46,7 @@ export type UserCenterParamList = {
   Setting: undefined;
   EditUser: undefined;
   AddPetStory: PetInfoProps;
-  ShowPetStory: undefined;
+  ShowPetStory: PetInfoProps;
 };
 
 export type PetInfoProps = {

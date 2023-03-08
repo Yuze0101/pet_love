@@ -1,7 +1,5 @@
 import { Card, Layout, Text } from '@ui-kitten/components';
-import { Image } from 'react-native';
 
-// TODO 线上使用缓存版图片
 import { CacheImage } from './CacheImage';
 import { RenderProp } from '@ui-kitten/components/devsupport';
 import { ViewProps } from 'react-native';
